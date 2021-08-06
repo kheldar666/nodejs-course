@@ -15,7 +15,7 @@ router.get('/', (req, res, next) => {
     //res.sendFile(path.join(rootDir, 'views','html','shop.html'));
     
     //returning a dynamic template
-    res.render('shop',{prods: products, docTitle:'Martin\'s Shop'});
+    res.render('shop',{prods: products, docTitle:'Martin\'s Shop', path:'/'});
 });
 
 module.exports = router;

@@ -14,7 +14,7 @@ router.get('/add-product', (req, res, next) => {
 
     //Return Pug Template
     res
-        .render('add-product',{docTitle:'Add a Product'});
+        .render('add-product',{docTitle:'Add a Product', path:'/admin/add-product'});
 });
 
 router.post('/add-product', (req, res, next) => {

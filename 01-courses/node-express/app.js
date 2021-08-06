@@ -4,12 +4,28 @@ const express = require('express');
 
 const app = express();
 
-//Setting the Templating Engine
-app.set('view engine','pug');
 
+
+//Setting the Templating Engine
+
+// Using HandleBars
+const expressHbs = require('express-handlebars');
+app.engine('hbs', expressHbs({
+    extname:'.hbs',
+    layoutsDir:'views/hbs/layouts',
+    defaultLayout:'main-layout'
+}));
+
+//Setting the View Engine.
+app.set('view engine','hbs');
+app.set('views','views/hbs');
+
+/* 
+//Using Pug
+app.set('view engine','pug');
 //Setting the Templates Path
 app.set('views','views/pug');
-
+*/
 const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
@@ -35,11 +51,11 @@ app.use((req, res, next) => {
     //     .status(404)
     //     .sendFile(path.join(__dirname,'views','errors','404.html'));
 
-    // Returning Pug Template
+    // Returning Dynamic Template
     res
         .status(404)
         .render('errors/404',{
-            docTitle:'Page Not Found',
+            pageTitle:'Page Not Found',
             errorMsg:'Oops ! Looks like you are lost ?'
             });
 });

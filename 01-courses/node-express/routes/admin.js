@@ -12,9 +12,19 @@ router.get('/add-product', (req, res, next) => {
     //Return Static File
     //res.sendFile(path.join(rootDir,'views','html','add-product.html'))
 
-    //Return Pug Template
+    //Return Dynamic Template
+    //For Pug
+    // res
+    //     .render('add-product',{pageTitle:'Add a Product', path:'/admin/add-product'});
+
+    //For Handlebars
     res
-        .render('add-product',{docTitle:'Add a Product', path:'/admin/add-product'});
+        .render('add-product',{
+            pageTitle:'Add a Product', 
+            activeAddProduct:true,
+            productCss:true,
+            formsCss:true
+        });
 });
 
 router.post('/add-product', (req, res, next) => {

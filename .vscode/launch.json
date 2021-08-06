@@ -7,15 +7,15 @@
         {
             "type": "pwa-node",
             "request": "launch",
-            "name": "Node First App",
+            "name": "Node Assignment(s) App",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/01-courses/node-first-app/app.js",
+            "program": "${workspaceFolder}/02-assignments/004/app.js",
             "restart": true,
             "runtimeExecutable": "nodemon",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/01-courses/node-first-app/"
+            "cwd": "${workspaceFolder}/02-assignments/004/"
         },
         {
             "type": "pwa-node",

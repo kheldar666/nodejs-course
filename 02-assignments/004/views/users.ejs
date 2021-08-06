@@ -1,0 +1,17 @@
+<%- include('./includes/header.ejs') %>
+
+<h1>Users Page</h1>
+
+<% if(userList.length > 0) { %>
+<ul>
+    <% for(let i in userList) { %>
+        <li><%= userList[i] %></li>
+    <% } %>
+</ul>
+<% } else { %>
+    <h2>User list is empty</h2>
+<% } %>
+
+<a href="/">Add User</a>
+
+<%- include('./includes/footer.ejs') %>

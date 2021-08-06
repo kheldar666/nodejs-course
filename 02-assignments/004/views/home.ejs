@@ -1,0 +1,11 @@
+<%- include('./includes/header.ejs') %>
+
+<h1>Home Page</h1>
+
+<form action="/users" method="post">
+    <label for="username">Username</label>
+    <input type="text" name="username" id="username">
+    <button type="submit">Send</button>
+</form>
+
+<%- include('./includes/footer.ejs') %>

@@ -8,27 +8,7 @@ const app = express();
 
 // Using EJS
 app.set('view engine','ejs');
-app.set('views','views/ejs');
-
-/*
-// Using HandleBars
-const expressHbs = require('express-handlebars');
-app.engine('hbs', expressHbs({
-    extname:'.hbs',
-    layoutsDir:'views/hbs/layouts',
-    defaultLayout:'main-layout'
-}));
-//Setting the View Engine.
-app.set('view engine','hbs');
-app.set('views','views/hbs');
-*/
-
-/* 
-//Using Pug
-app.set('view engine','pug');
-//Setting the Templates Path
-app.set('views','views/pug');
-*/
+app.set('views','views');
 
 const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
@@ -50,11 +30,6 @@ app.use(shopRoutes);
 
 // Managing 404
 app.use((req, res, next) => {
-    // Returnion Static File
-    // res
-    //     .status(404)
-    //     .sendFile(path.join(__dirname,'views','errors','404.html'));
-
     // Returning Dynamic Template
     res
         .status(404)

@@ -4,7 +4,13 @@ const express = require('express');
 
 const app = express();
 
-const adminRoutes = require('./routes/admin');
+//Setting the Templating Engine
+app.set('view engine','pug');
+
+//Setting the Templates Path
+app.set('views','views/pug');
+
+const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
 app.use(express.urlencoded({
@@ -19,15 +25,23 @@ app.use('/', (req, res, next) => {
     next();
 });
 
-app.use('/admin', adminRoutes);
-
+app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 
 // Managing 404
 app.use((req, res, next) => {
+    // Returnion Static File
+    // res
+    //     .status(404)
+    //     .sendFile(path.join(__dirname,'views','errors','404.html'));
+
+    // Returning Pug Template
     res
         .status(404)
-        .sendFile(path.join(__dirname,'views','errors','404.html'));
+        .render('errors/404',{
+            docTitle:'Page Not Found',
+            errorMsg:'Oops ! Looks like you are lost ?'
+            });
 });
 
 app.listen(3000);

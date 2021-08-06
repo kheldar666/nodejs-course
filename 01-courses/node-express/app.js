@@ -10,8 +10,9 @@ const app = express();
 app.set('view engine','ejs');
 app.set('views','views');
 
-const adminData = require('./routes/admin');
+const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const errorRoutes = require('./routes/errors');
 
 app.use(express.urlencoded({
     extended: false
@@ -25,20 +26,10 @@ app.use('/', (req, res, next) => {
     next();
 });
 
-app.use('/admin', adminData.routes);
+app.use('/admin', adminRoutes.routes);
 app.use(shopRoutes);
 
 // Managing 404
-app.use((req, res, next) => {
-    // Returning Dynamic Template
-    res
-        .status(404)
-        .render('errors/404',{
-            pageTitle:'Page Not Found',
-            errorMsg:'Oops ! Looks like you are lost ?',
-            path:'/404',
-            css:[]
-            });
-});
+app.use(errorRoutes);
 
 app.listen(3000);

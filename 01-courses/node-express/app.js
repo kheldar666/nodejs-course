@@ -4,10 +4,13 @@ const express = require('express');
 
 const app = express();
 
-
-
 //Setting the Templating Engine
 
+// Using EJS
+app.set('view engine','ejs');
+app.set('views','views/ejs');
+
+/*
 // Using HandleBars
 const expressHbs = require('express-handlebars');
 app.engine('hbs', expressHbs({
@@ -15,10 +18,10 @@ app.engine('hbs', expressHbs({
     layoutsDir:'views/hbs/layouts',
     defaultLayout:'main-layout'
 }));
-
 //Setting the View Engine.
 app.set('view engine','hbs');
 app.set('views','views/hbs');
+*/
 
 /* 
 //Using Pug
@@ -26,6 +29,7 @@ app.set('view engine','pug');
 //Setting the Templates Path
 app.set('views','views/pug');
 */
+
 const adminData = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
@@ -56,7 +60,9 @@ app.use((req, res, next) => {
         .status(404)
         .render('errors/404',{
             pageTitle:'Page Not Found',
-            errorMsg:'Oops ! Looks like you are lost ?'
+            errorMsg:'Oops ! Looks like you are lost ?',
+            path:'/404',
+            css:[]
             });
 });
 

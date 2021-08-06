@@ -20,10 +20,9 @@ router.get('/add-product', (req, res, next) => {
     //For Handlebars
     res
         .render('add-product',{
-            pageTitle:'Add a Product', 
-            activeAddProduct:true,
-            productCss:true,
-            formsCss:true
+            pageTitle:'Add a Product',
+            path:'/admin/add-product',
+            css:['product','forms']
         });
 });
 

@@ -23,9 +23,8 @@ router.get('/', (req, res, next) => {
     res.render('shop',{
             prods: products,
             pageTitle:'Martin\'s Shop',
-            hasProducts:products.length>0,
-            activeShop:true,
-            productCss:true
+            path:'/',
+            css:['product']
         });
 
 });

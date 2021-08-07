@@ -5,12 +5,17 @@ const express = require('express');
 const router = express.Router();
 
 const adminController = require('../controllers/admin');
-const { route } = require('./shop');
+
+router.get('/products', adminController.getProducts);
 
 router.get('/add-product', adminController.getAddProduct);
 
 router.post('/add-product', adminController.postAddProducts);
 
-router.get('/products', adminController.getProducts);
+router.get('/edit-product', adminController.getEditProduct);
+
+router.post('/edit-product', adminController.getUpdateProduct);
+
+router.post('/delete-product', adminController.postDeleteProduct);
 
 exports.routes=router;

@@ -14,8 +14,11 @@ const getProductFromFile = (callback) => {
 }
 
 module.exports = class Product {
-    constructor(title) {
+    constructor(title,imageUrl,description, price) {
         this.title = title;
+        this.imageUrl = imageUrl;
+        this.description = description;
+        this.price = price;
     }
 
     save() {
@@ -29,5 +32,13 @@ module.exports = class Product {
 
     static fetchAll(callback) {
         getProductFromFile(callback);
+    }
+
+    static getEmptyProduct() {
+        return new Product('','','',0.00);
+    }
+
+    static getProduct(id) {
+        return new Product('Edit Title','Edit Image','Edit Description',6.66);
     }
 }

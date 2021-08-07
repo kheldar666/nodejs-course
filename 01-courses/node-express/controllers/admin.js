@@ -32,19 +32,30 @@ exports.postAddProducts = (req, res, next) => {
 }
 
 exports.getEditProduct = (req, res, next) => {
-    res.render('admin/edit-product',{
-        pageTitle:'Martin\'s Shop - Admin - Edit a Product',
-        path:'/admin/edit-product',
-        css:['product','forms'],
-        product:Product.getProduct(0)
+    const productId = req.params.productId;
+    Product.findByid(productId, product => {
+        res.render('admin/edit-product',{
+            pageTitle:'Martin\'s Shop - Admin - Edit a Product',
+            path:'/admin/edit-product',
+            css:['product','forms'],
+            product: product
+        });
     });
 }
 
-exports.getUpdateProduct = (req, res, next) => {
+exports.postUpdateProduct = (req, res, next) => {
+    const updatedProduct = new Product(
+        req.body.title,
+        req.body.imageUrl,
+        req.body.description,
+        req.body.price
+    );
+    updatedProduct.id = req.body.productId;
+    updatedProduct.save();
     res.redirect('/admin/products');
 }
 
 exports.postDeleteProduct = (req, res, next) => {
-
+    Product.deleteById(req.body.productId);
     res.redirect('/admin/products');
 }

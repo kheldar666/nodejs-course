@@ -3,7 +3,15 @@
 <%- include('../includes/navigation.ejs') %>
 
 <main>
-    <h1>Index Page</h1>
+    <% if (prods.length > 0) { %>
+        <div class="grid">
+            <% for (let product of prods) { %>
+                <%- include('../includes/product-card.ejs',{product:product,mode:'shop'}) %>
+            <% } %>
+        </div>
+    <% } else { %>
+        <h1>No Products Found!</h1>
+    <% } %>
 </main>
 
 <%- include('../includes/end.ejs') %>

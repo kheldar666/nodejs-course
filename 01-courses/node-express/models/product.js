@@ -3,7 +3,7 @@ const path = require('path');
 const rootDir = require('../utils/path');
 const saveToFile = path.join(rootDir,'data','products.json');
 
-const getProductFromFile = (callback) => {
+const getProductsFromFile = (callback) => {
     fs.readFile(saveToFile, (err, fileContent)=>{
         let products = [];
         if(!err) {
@@ -13,8 +13,15 @@ const getProductFromFile = (callback) => {
     });
 }
 
+const saveProductsToFile = (products) => {
+    fs.writeFile(saveToFile,JSON.stringify(products),(err) => {
+        console.log(err);
+    });
+}
+
 module.exports = class Product {
     constructor(title,imageUrl,description, price) {
+        this.id=-1;
         this.title = title;
         this.imageUrl = imageUrl;
         this.description = description;
@@ -22,23 +29,50 @@ module.exports = class Product {
     }
 
     save() {
-        getProductFromFile((products) => {
-            products.push(this);
-            fs.writeFile(saveToFile,JSON.stringify(products),(err) => {
-                console.log(err);
-            });
+        getProductsFromFile(products => {
+            if (this.id !== -1) {
+                const updatedProducts = products.map(product => {
+                    if(product.id === this.id)
+                        return this;
+                    else
+                        return product;
+                })
+                saveProductsToFile(updatedProducts);
+            } else {
+                this.id = Math.random().toString().split('.')[1];
+                products.push(this);
+                saveProductsToFile(products);
+            }
         });
     }
 
     static fetchAll(callback) {
-        getProductFromFile(callback);
+        getProductsFromFile(callback);
     }
 
     static getEmptyProduct() {
-        return new Product('','','',0.00);
+        // Use a default dummy image
+        return new Product('','https://www.odoo.com/web/image/res.users/601020/image_1024?unique=c28878c','',0.00);
     }
 
-    static getProduct(id) {
-        return new Product('Edit Title','Edit Image','Edit Description',6.66);
+    static findByid(id, callback) {
+        getProductsFromFile(products => { 
+            const product = products.find(p => p.id === id)
+            callback(product);
+        });
+    }
+
+    static deleteById(id, callback) {
+        getProductsFromFile(products => {
+            for (let index = 0; index < products.length; index++) {
+                const product = products[index];
+                if(product.id === id) {
+                    products.splice(index,1);
+                    break;
+                }
+            }
+            
+            saveProductsToFile(products);
+        });
     }
 }

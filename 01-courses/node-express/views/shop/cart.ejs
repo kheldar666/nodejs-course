@@ -3,21 +3,21 @@
 <%- include('../includes/navigation.ejs') %>
 
 <main>
-    <h1>Cart Page</h1>
-    <% if(cart.items.length > 0) {  %>
-        <ul>
-            <% for(item of cart.items) { %>
-            <li>
-                <p><%=item.product.title%> (Qty : <%=item.qty%>)</li></p>
-                <form action="/removefromcart" method="post">
-                    <input type="hidden" name="productId" value="<%=item.product.id%>">
-                    <button class="btn" class="btn">Delete</button>
-                </form>
+    <% if(cartProducts.length > 0) {  %>
+        <ul class="cart__item-list">
+            <% for(product of cartProducts) { console.log(product) %>
+                <li class="cart__item">
+                    <h1><%=product.title%></h1>
+                    <h2>(Qty : <%= product.cartItem.quantity %> )</h2>
+                    <form action="/removefromcart" method="post">
+                        <input type="hidden" name="productId" value="<%=product.id%>">
+                        <button class="btn" class="btn">Delete</button>
+                    </form>
+                </li>
             <% } %>
         </ul>
-        <h2>Total Price: $<%= cart.totalPrice %></h2>
     <% } else  { %>
-        <h1>You Cart is Empty</h1>
+        <h1>Your Cart is Empty</h1>
     <% } %>
 </main>
 

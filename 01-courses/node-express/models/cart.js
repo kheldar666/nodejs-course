@@ -26,6 +26,20 @@ module.exports = class Cart {
             this.saveCart(cart);
         })
     }
+
+    static removeProduct(product) {
+        this.loadCart(cart => {
+            for (let index = 0; index < cart.items.length; index++) {
+                const item = cart.items[index];
+                if(item.productId === product.id){
+                    const removeValue = Number(item.qty)*product.price;
+                    cart.items.splice(index,1);
+                    cart.totalPrice = Number(cart.totalPrice) - removeValue;
+                }
+            }
+            this.saveCart(cart);
+        })
+    }
     
     static loadCart(callback) {
         fs.readFile(saveToFile,(err, fileContent) => {

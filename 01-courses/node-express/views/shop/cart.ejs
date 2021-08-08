@@ -6,8 +6,13 @@
     <h1>Cart Page</h1>
     <% if(cart.items.length > 0) {  %>
         <ul>
-            <% for(item of cart.items) {console.log(item)%>
-            <li><%=item.product.title%> (Qty : <%=item.quantity%>)</li>
+            <% for(item of cart.items) { %>
+            <li>
+                <p><%=item.product.title%> (Qty : <%=item.qty%>)</li></p>
+                <form action="/removefromcart" method="post">
+                    <input type="hidden" name="productId" value="<%=item.product.id%>">
+                    <button class="btn" class="btn">Delete</button>
+                </form>
             <% } %>
         </ul>
         <h2>Total Price: $<%= cart.totalPrice %></h2>

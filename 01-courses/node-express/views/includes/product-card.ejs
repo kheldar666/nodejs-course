@@ -12,7 +12,7 @@
     <% if (mode==='shop') { %>
         <div class="card__actions">
             <a href="/products/<%= product.id %>" class="btn">Details</a>
-            <form action="/cart" method="post">
+            <form action="/addtocart" method="post">
                 <input type="hidden" name="productId" value="<%= product.id %>">
                 <button type="submit" class="btn">Add to Cart</button>
             </form>

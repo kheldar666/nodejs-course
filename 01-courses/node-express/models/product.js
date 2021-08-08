@@ -70,8 +70,7 @@ module.exports = class Product {
                     products.splice(index,1);
                     break;
                 }
-            }
-            
+            }            
             saveProductsToFile(products);
         });
     }

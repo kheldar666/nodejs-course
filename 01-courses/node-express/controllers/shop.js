@@ -36,40 +36,43 @@ exports.getProductDetails = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    Cart.loadCart( cart => {
-        const displayCart = {
-            items:[],
-            totalPrice:cart.totalPrice
-        };
+    Cart.loadCart( cart => { //C'est super bourrin....
+        Product.fetchAll( products => {
+            const displayCart = {
+                items:[],
+                totalPrice:cart.totalPrice
+            };
 
-        displayCart.items = cart.items.map( item => {
-            const productId = Object.keys(item)[0];
-            let newItem = {product:{title:"dummy"},quantity:2};
-
-            Product.findByid(productId, (product) => {
-                newItem = {
-                    product:product,
-                    quantity:item[productId]
-                };
-                //return newItem;
+            for(product of products) {
+                for (item of cart.items) {
+                    if(item.productId === product.id){
+                        displayCart.items.push({product:product,qty:item.qty})
+                    }
+                }
+            }
+    
+            res.render('shop/cart',{
+                pageTitle:'Martin\'s Shop - Your Cart',
+                path:'/cart',
+                css:['product'],
+                cart:displayCart
             });
-
-            return newItem;
-        })
-
-        res.render('shop/cart',{
-            pageTitle:'Martin\'s Shop - Your Cart',
-            path:'/cart',
-            css:['product'],
-            cart:displayCart
         });
     });
 };
 
-exports.postCart = (req, res, next) => {
+exports.postAddToCart = (req, res, next) => {
     const productId = req.body.productId;
     Product.findByid(productId, product => {
         Cart.addProduct(product);
+        res.redirect('/cart');
+    });
+};
+
+exports.postRemoveFromCart = (req, res, next) => {
+    const productId = req.body.productId;
+    Product.findByid(productId, product => {
+        Cart.removeProduct(product);
         res.redirect('/cart');
     });
 };

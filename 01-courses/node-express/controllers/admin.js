@@ -1,14 +1,18 @@
 const Product = require('../models/product');
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll((products) => {
-        res.render('admin/products',{
+    Product.fetchAll()
+        .then(([products,fieldData]) => {
+            res.render('admin/products',{
                 prods: products,
                 pageTitle:'Martin\'s Shop - Admin - Product List',
                 path:'/admin/products',
                 css:['product']
+            });
+        })
+        .catch(error => {
+            console.error(err);
         });
-    });
 }
 
 exports.getAddProduct = (req, res, next) => {
@@ -27,8 +31,14 @@ exports.postAddProducts = (req, res, next) => {
         req.body.description,
         req.body.price
     );
-    product.save();
-    res.redirect('/admin/products');
+
+    product.save()
+        .then( () => {
+            res.redirect('/admin/products');
+        })
+        .catch( error => {
+            console.error(error);
+        });
 }
 
 exports.getEditProduct = (req, res, next) => {

@@ -2,37 +2,55 @@ const Product = require('../models/product');
 const Cart = require('../models/cart');
 
 exports.getIndex = (req, res, next) => {
-    Product.fetchAll((products) => {
-        res.render('shop/index',{
-            prods: products,
-            pageTitle:'Martin\'s Shop - Welcome',
-            path:'/',
-            css:['product']
+    Product.fetchAll()
+        .then(([products,fieldData]) => {
+            res.render('shop/index',{
+                prods: products,
+                pageTitle:'Martin\'s Shop - Welcome',
+                path:'/',
+                css:['product']
+            })
+        })
+        .catch(error => {
+            console.error(err);
         });
-    });
 };
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll((products) => {
-        res.render('shop/product-list',{
-            prods: products,
-            pageTitle:'Martin\'s Shop - All Products',
-            path:'/products',
-            css:['product']
+    Product.fetchAll()
+        .then(([products,fieldData]) => {
+            res.render('shop/product-list',{
+                prods: products,
+                pageTitle:'Martin\'s Shop - All Products',
+                path:'/products',
+                css:['product']
+            })
+        })
+        .catch(error => {
+            console.error(err);
         });
-    });
 };
 
 exports.getProductDetails = (req, res, next) => {
     const productId = req.params.productId;
-    Product.findByid(productId,(product) => {
-        res.render('shop/product-detail',{
-            pageTitle:'Martin\'s Shop - Details - ' + product.title,
-            path:'/products',
-            css:['product'],
-            product: product
-        });
-    })
+    Product.findByid(productId)
+        .then(([product]) => {
+            console.log(product);
+            console.log(product.length);
+            if(product.length === 1) {
+                res.render('shop/product-detail',{
+                    pageTitle:'Martin\'s Shop - Details - ' + product[0].title,
+                    path:'/products',
+                    css:['product'],
+                    product: product[0]
+                });
+            } else {
+                // No Matching Product...
+                // Continuing to generate the 404
+                next();
+            }
+        })
+        .catch( err => console.error(err))
 };
 
 exports.getCart = (req, res, next) => {

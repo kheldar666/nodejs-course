@@ -18,10 +18,9 @@ app.set('view engine','ejs');
 app.set('views','views');
 
 //Importing the Routes
-const adminRoutes = require('./routes/admin');
-const shopRoutes = require('./routes/shop');
+const adminRoutes = require('./routes/mysql/admin');
+const shopRoutes = require('./routes/mysql/shop');
 const errorRoutes = require('./routes/errors');
-const e = require('express');
 
 //Process the forms/query strings
 app.use(express.urlencoded({

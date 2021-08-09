@@ -4,7 +4,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const adminController = require('../controllers/mysql/admin');
+const adminController = require('../../controllers/mysql/admin');
 
 router.get('/products', adminController.getProducts);
 

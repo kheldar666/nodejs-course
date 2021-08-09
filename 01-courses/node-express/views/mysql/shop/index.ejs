@@ -1,12 +1,12 @@
-<%- include('../includes/head.ejs') %>
+<%- include('../../includes/head.ejs') %>
 
-<%- include('../includes/navigation.ejs') %>
+<%- include('../../includes/navigation.ejs') %>
 
 <main>
     <% if (prods.length > 0) { %>
         <div class="grid">
             <% for (let product of prods) { %>
-                <%- include('../includes/product-card.ejs',{product:product,mode:'shop'}) %>
+                <%- include('../../includes/product-card.ejs',{product:product,mode:'shop'}) %>
             <% } %>
         </div>
     <% } else { %>
@@ -14,4 +14,4 @@
     <% } %>
 </main>
 
-<%- include('../includes/end.ejs') %>
+<%- include('../../includes/end.ejs') %>

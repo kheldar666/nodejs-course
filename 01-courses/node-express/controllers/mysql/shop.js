@@ -3,7 +3,7 @@ const Product = require('../../models/mysql/product');
 exports.getIndex = (req, res, next) => {
     Product.findAll()
         .then(products => {
-            res.render('shop/index',{
+            res.render('mysql/shop/index',{
                 prods: products,
                 pageTitle:'Martin\'s Shop - Welcome',
                 path:'/',
@@ -18,7 +18,7 @@ exports.getIndex = (req, res, next) => {
 exports.getProducts = (req, res, next) => {
     Product.findAll()
         .then(products => {
-            res.render('shop/product-list',{
+            res.render('mysql/shop/product-list',{
                 prods: products,
                 pageTitle:'Martin\'s Shop - All Products',
                 path:'/products',
@@ -37,7 +37,7 @@ exports.getProductDetails = (req, res, next) => {
     }
     Product.findByPk(productId)
         .then(product => {
-            res.render('shop/product-detail',{
+            res.render('mysql/shop/product-detail',{
                 pageTitle:'Martin\'s Shop - Details - ' + product.title,
                 path:'/products',
                 css:['product'],
@@ -62,7 +62,7 @@ exports.getCart = (req, res, next) => {
             return cart.getProducts()
         })
         .then(cartProducts => {
-            res.render('shop/cart',{
+            res.render('mysql/shop/cart',{
                 pageTitle:'Martin\'s Shop - Your Cart',
                 path:'/cart',
                 css:['product','cart'],
@@ -153,7 +153,7 @@ exports.createOrder = (req, res, next) => {
 exports.getOrders = (req, res, next) => {
     req.currentUser.getOrders({include:['products']})
     .then( orders => {
-        res.render('shop/orders',{
+        res.render('mysql/shop/orders',{
             pageTitle:'Martin\'s Shop - Orders',
             path:'/orders',
             css:['product'],

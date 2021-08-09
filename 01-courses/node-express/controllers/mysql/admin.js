@@ -3,7 +3,7 @@ const Product = require('../../models/mysql/product');
 exports.getProducts = (req, res, next) => {
     req.currentUser.getProducts() //Gets all Products created by the current User
         .then(products => {
-            res.render('admin/products',{
+            res.render('mysql/admin/products',{
                 prods: products,
                 pageTitle:'Martin\'s Shop - Admin - Product List',
                 path:'/admin/products',
@@ -16,7 +16,7 @@ exports.getProducts = (req, res, next) => {
 }
 
 exports.getAddProduct = (req, res, next) => {
-    res.render('admin/add-product',{
+    res.render('mysql/admin/add-product',{
             pageTitle:'Martin\'s Shop - Admin - Add a Product',
             path:'/admin/add-product',
             css:['product','forms'],
@@ -40,7 +40,7 @@ exports.postAddProducts = (req, res, next) => {
 exports.getEditProduct = (req, res, next) => {
     const productId = req.params.productId;
     Product.findByPk(productId).then(product => {
-        res.render('admin/edit-product',{
+        res.render('mysql/admin/edit-product',{
             pageTitle:'Martin\'s Shop - Admin - Edit a Product',
             path:'/admin/edit-product',
             css:['product','forms'],

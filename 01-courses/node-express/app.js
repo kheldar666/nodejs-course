@@ -7,6 +7,8 @@ const Product = require('./models/product');
 const User = require('./models/user');
 const Cart = require('./models/cart');
 const CartItem = require('./models/cart-item');
+const Order = require('./models/order');
+const OrderItem = require('./models/order-item');
 
 const app = express();
 
@@ -52,12 +54,18 @@ app.use(errorRoutes);
 //Creating Relations between Models
 Product.belongsTo(User, {contraints:true, onDelete:'CASCADE'});
 Product.belongsToMany(Cart, {through: CartItem})
+Product.belongsToMany(Order, {through: OrderItem})
 
 User.hasMany(Product);
 User.hasOne(Cart);
+User.hasMany(Order);
 
 Cart.belongsTo(User, {contraints:true, onDelete:'CASCADE'});
 Cart.belongsToMany(Product, {through: CartItem});
+
+Order.belongsTo(User, {contraints:true, onDelete:'CASCADE'});
+Order.belongsToMany(Product, {through: OrderItem});
+
 
 //Init the Database and Start the Server
 let currentUser;

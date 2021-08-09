@@ -5,7 +5,7 @@
 <main>
     <% if(cartProducts.length > 0) {  %>
         <ul class="cart__item-list">
-            <% for(product of cartProducts) { console.log(product) %>
+            <% for(product of cartProducts) { %>
                 <li class="cart__item">
                     <h1><%=product.title%></h1>
                     <h2>(Qty : <%= product.cartItem.quantity %> )</h2>
@@ -16,6 +16,12 @@
                 </li>
             <% } %>
         </ul>
+        <hr />
+        <div class="centered">
+            <form action="/create-order" method="post">
+                <button type="submit" class="btn">Order Now !</button>
+            </form>
+        </div>
     <% } else  { %>
         <h1>Your Cart is Empty</h1>
     <% } %>

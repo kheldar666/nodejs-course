@@ -29,7 +29,6 @@ class Product {
     }
 
     static fetchAll() {
-        
         return getDb().collection(PRODUCTS_COLLECTION)
             .find() // We could pass a filter here, but it is not useful in our case
             .toArray() //Find does NOT return a Promise, but a Cursor. So or now we transform into an Array, later we will do Pagination
@@ -54,6 +53,13 @@ class Product {
         return getDb().collection(PRODUCTS_COLLECTION)
             .deleteOne({_id: new mongodb.ObjectId(productId)});
     }
+
+    static getProductsFromCart(cart) {
+        const arrProductIds = cart.items.map(item => {return item.productId})
+        return getDb().collection(PRODUCTS_COLLECTION)
+            .find({_id: {$in: arrProductIds}})
+            .toArray()
+    };
 
 }
 

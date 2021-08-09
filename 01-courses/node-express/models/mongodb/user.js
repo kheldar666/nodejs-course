@@ -1,5 +1,6 @@
 const mongodb = require('mongodb')
 const getDb = require('../../utils/db-mongodb').getDb;
+const Product = require('./product');
 
 const USERS_COLLECTION = "Users";
 class User {
@@ -21,14 +22,14 @@ class User {
 
     addToCart(product) {
         const cartProductIndex = this.cart.items.findIndex( cp => {
-            return cp._id.equals(product._id);
+            return cp.productId.toString() === product._id.toString();
         })
 
         if(cartProductIndex > -1) {
             const newQty = this.cart.items[cartProductIndex].quantity + 1;
             this.cart.items[cartProductIndex].quantity = newQty;
         } else {
-            this.cart.items.push({...product, quantity:1})
+            this.cart.items.push({productId:product._id, quantity:1})
         }
 
         return getDb().collection(USERS_COLLECTION)
@@ -36,6 +37,22 @@ class User {
                 {_id:this._id},
                 {$set : {cart: this.cart}}
             )
+    }
+
+    getCartWithProducts() {
+        return Product.getProductsFromCart(this.cart)
+        .then( arrProducts =>{
+            const updatedCart = arrProducts.map( product => {
+                return {
+                    ...product,
+                    quantity:this.cart.items.find(i => {
+                        return i.productId.toString() === product._id.toString()
+                    }).quantity
+                }
+            })
+           return updatedCart
+        })
+        .catch(err => console.error(err))
     }
 
     static findByStringId(userId) {

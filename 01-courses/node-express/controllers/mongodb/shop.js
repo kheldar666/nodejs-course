@@ -49,13 +49,16 @@ exports.getProductDetails = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    const userCart = req.currentUser.cart;
-    res.render('mongodb/shop/cart',{
-        pageTitle:'Martin\'s Shop - Your Cart',
-        path:'/cart',
-        css:['product','cart'],
-        cartProducts:userCart.items
-    });
+    req.currentUser.getCartWithProducts()
+    .then( cartWithProducts => {
+        res.render('mongodb/shop/cart',{
+            pageTitle:'Martin\'s Shop - Your Cart',
+            path:'/cart',
+            css:['product','cart'],
+            cartProducts:cartWithProducts
+        });
+    })
+    .catch(err => console.error(err));
 };
 
 exports.postAddToCart = (req, res, next) => {

@@ -20,11 +20,24 @@
         {
             "type": "pwa-node",
             "request": "launch",
-            "name": "Express App",
+            "name": "Express App (MySQL)",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/01-courses/node-express/app.js",
+            "program": "${workspaceFolder}/01-courses/node-express/app-mysql.js",
+            "restart": true,
+            "runtimeExecutable": "nodemon",
+            "console": "integratedTerminal",
+            "cwd":"${workspaceFolder}/01-courses/node-express/"
+        },
+        {
+            "type": "pwa-node",
+            "request": "launch",
+            "name": "Express App (MongoDB)",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}/01-courses/node-express/app-mongodb.js",
             "restart": true,
             "runtimeExecutable": "nodemon",
             "console": "integratedTerminal",

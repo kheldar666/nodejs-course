@@ -3,12 +3,13 @@ const path = require('path');
 const express = require('express');
 
 const databaseConns = require('./utils/database');
-const Product = require('./models/mysql/product');
+
+// Initializing Sequelize Models
+require('./models/mysql/mysql-definitions');
+ 
+// Import Models
 const User = require('./models/mysql/user');
-const Cart = require('./models/mysql/cart');
-const CartItem = require('./models/mysql/cart-item');
-const Order = require('./models/mysql/order');
-const OrderItem = require('./models/mysql/order-item');
+const Product = require('./models/mysql/product');
 
 const app = express();
 
@@ -20,6 +21,9 @@ app.set('views','views');
 //Importing the Routes
 const adminRoutes = require('./routes/mysql/admin');
 const shopRoutes = require('./routes/mysql/shop');
+
+
+//Managing Error Routes
 const errorRoutes = require('./routes/errors');
 
 //Process the forms/query strings
@@ -49,21 +53,6 @@ app.use(shopRoutes);
 
 // Managing 404
 app.use(errorRoutes);
-
-//Creating Relations between Models
-Product.belongsTo(User, {contraints:true, onDelete:'CASCADE'});
-Product.belongsToMany(Cart, {through: CartItem})
-Product.belongsToMany(Order, {through: OrderItem})
-
-User.hasMany(Product);
-User.hasOne(Cart);
-User.hasMany(Order);
-
-Cart.belongsTo(User, {contraints:true, onDelete:'CASCADE'});
-Cart.belongsToMany(Product, {through: CartItem});
-
-Order.belongsTo(User, {contraints:true, onDelete:'CASCADE'});
-Order.belongsToMany(Product, {through: OrderItem});
 
 
 //Init the Database and Start the Server
@@ -96,9 +85,6 @@ databaseConns.sequelize
         return Promise.resolve(products);
     })
     .then( result => {
-        databaseConns.mongoConnect(mongoClient => {
-            console.log(mongoClient);
-            app.listen(3000)
-        })
+        app.listen(3000)
     })
     .catch(err => console.error(err));

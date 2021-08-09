@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 
-const dbConn = require('../../utils/database');
+const dbConn = require('../../utils/db-mysql');
 
 const Product = dbConn.sequelize.define('product', {
     id: {

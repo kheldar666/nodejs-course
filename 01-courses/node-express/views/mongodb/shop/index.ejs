@@ -1,0 +1,17 @@
+<%- include('../../includes/head.ejs') %>
+
+<%- include('../../includes/navigation.ejs') %>
+
+<main>
+    <% if (prods.length > 0) { %>
+        <div class="grid">
+            <% for (let product of prods) { %>
+                <%- include('../../includes/product-card.ejs',{product:product,mode:'shop'}) %>
+            <% } %>
+        </div>
+    <% } else { %>
+        <h1>No Products Found!</h1>
+    <% } %>
+</main>
+
+<%- include('../../includes/end.ejs') %>

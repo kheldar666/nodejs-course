@@ -2,7 +2,7 @@ const path = require('path');
 
 const express = require('express');
 
-const databaseConns = require('./utils/database');
+const dbConn = require('./utils/db-mysql');
 
 // Initializing Sequelize Models
 require('./models/mysql/mysql-definitions');
@@ -57,7 +57,7 @@ app.use(errorRoutes);
 
 //Init the Database and Start the Server
 let currentUser;
-databaseConns.sequelize
+dbConn.sequelize
     .sync({force:false})
     .then( result => {
         return User.findByPk(1);

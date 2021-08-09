@@ -2,7 +2,7 @@ const path = require('path');
 
 const express = require('express');
 
-const databaseConns = require('./utils/database');
+const dbConn = require('./utils/db-mongodb');
 
 const app = express();
 
@@ -12,9 +12,8 @@ app.set('view engine','ejs');
 app.set('views','views');
 
 //Importing the Routes
-//Routes Using Sequelize imports
-const adminRoutes = require('./routes/mysql/admin');
-const shopRoutes = require('./routes/mysql/shop');
+const adminRoutes = require('./routes/mongodb/admin');
+// const shopRoutes = require('./routes/mongodb/shop');
 
 
 //Managing Error Routes
@@ -33,24 +32,25 @@ app.use((req, res, next) => {
     console.log("Request URL: " + req.url);
     console.log("Request method: " + req.method);
 
-    User.findByPk(1)
-        .then( user => {
-            req.currentUser = user;
-            return Promise.resolve();
-        })
-        .then( result => next() )
-        .catch( err => console.error(err));    
+    // User.findByPk(1)
+    //     .then( user => {
+    //         req.currentUser = user;
+    //         return Promise.resolve();
+    //     })
+    //     .then( result => next() )
+    //     .catch( err => console.error(err));
+    next();   
 });
 
 app.use('/admin', adminRoutes.routes);
-app.use(shopRoutes);
+// app.use(shopRoutes);
 
 // Managing 404
 app.use(errorRoutes);
 
 
 //Init the Database and Start the Server
-databaseConns.mongoConnect(mongoClient => {
-    console.log(mongoClient);
+dbConn.mongoConnect(mongoClient => {
+    //console.log(mongoClient);
     app.listen(3000)
 })

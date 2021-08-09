@@ -54,8 +54,7 @@ class Product {
             .deleteOne({_id: new mongodb.ObjectId(productId)});
     }
 
-    static getProductsFromCart(cart) {
-        const arrProductIds = cart.items.map(item => {return item.productId})
+    static getProductsbyIds(arrProductIds) {
         return getDb().collection(PRODUCTS_COLLECTION)
             .find({_id: {$in: arrProductIds}})
             .toArray()

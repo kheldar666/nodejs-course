@@ -3,6 +3,7 @@ const getDb = require('../../utils/db-mongodb').getDb;
 const Product = require('./product');
 
 const USERS_COLLECTION = "Users";
+const ORDERS_COLLECTION = "Orders"
 class User {
     constructor(username, email, cart, id) {
         this.username = username;
@@ -40,31 +41,63 @@ class User {
     }
 
     deleteItemFromCart(productId) {
-        const updatedCartItems = this.cart.items.filter ( item => {
+        const updatedOrderItems = this.cart.items.filter ( item => {
             return item.productId.toString() !== productId.toString()
         });
 
         return getDb().collection(USERS_COLLECTION)
             .updateOne(
                 {_id:this._id},
-                {$set : {cart : {items: updatedCartItems}}}
+                {$set : {cart : {items: updatedOrderItems}}}
             )
     }
 
     getCartWithProducts() {
-        return Product.getProductsFromCart(this.cart)
-        .then( arrProducts =>{
-            const updatedCart = arrProducts.map( product => {
-                return {
-                    ...product,
-                    quantity:this.cart.items.find(i => {
-                        return i.productId.toString() === product._id.toString()
-                    }).quantity
-                }
+        const arrProductIds = this.cart.items.map(item => {return item.productId})
+        return Product.getProductsbyIds(arrProductIds)
+            .then( arrProducts => {
+                const updatedOrder = arrProducts.map( product => {
+                    return {
+                        ...product,
+                        quantity:this.cart.items.find(i => {
+                            return i.productId.toString() === product._id.toString()
+                        }).quantity
+                    }
+                })
+                return updatedOrder
             })
-           return updatedCart
-        })
-        .catch(err => console.error(err))
+            .catch(err => console.error(err))
+    }
+
+    createOrder() {
+        return this.getCartWithProducts()
+            .then( products => {
+                const order = {
+                    items:products,
+                    user:{_id:this._id,username:this.username}
+                }
+                return getDb().collection(ORDERS_COLLECTION)
+                    .insertOne(order)
+                    .then( result => {
+                        return this.clearCart();
+                    })
+                    .catch( err => console.error(err))
+            })
+
+    }
+
+    clearCart() {
+        this.cart = {items: []};
+        return getDb().collection(USERS_COLLECTION)
+                .updateOne(
+                    {_id:this._id},
+                    {$set : {cart : this.cart}}
+                )
+    }
+
+    getOrders() {
+        return getDb().collection(ORDERS_COLLECTION)
+            .find({'user._id':this._id}).toArray()
     }
 
     static findByStringId(userId) {

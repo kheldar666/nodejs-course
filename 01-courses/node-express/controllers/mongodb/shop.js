@@ -82,42 +82,23 @@ exports.postRemoveFromCart = (req, res, next) => {
         .catch(err => console.error(err))
 };
 
-// exports.createOrder = (req, res, next) => {
-//     let fetchedCart;
-//     req.currentUser.getCart()
-//     .then(cart => {
-//         fetchedCart = cart;
-//         return cart.getProducts();
-//     })
-//     .then( products => {
-//         // Transfer all Products from Cart to Order
-//         return req.currentUser.createOrder()
-//             .then( order => {
-//                 order.addProducts(products.map( product => {
-//                     product.orderItem = {quantity : product.cartItem.quantity}
-//                     return product;
-//                 }))
-//             })
-//     })
-//     .then( result => {
-//         //Cleanup the Cart
-//         return fetchedCart.setProducts(null);
-//     })
-//     .then( result => {
-//         res.redirect('/orders')
-//     })
-//     .catch(err => console.error(err));
-// };
+exports.createOrder = (req, res, next) => {
+    return req.currentUser.createOrder()
+        .then( result => {
+            res.redirect('/orders')
+        })
+        .catch(err => console.error(err));
+};
 
-// exports.getOrders = (req, res, next) => {
-//     req.currentUser.getOrders({include:['products']})
-//     .then( orders => {
-//         res.render('mongodb/shop/orders',{
-//             pageTitle:'Martin\'s Shop - Orders',
-//             path:'/orders',
-//             css:['product'],
-//             orders:orders
-//         })
-//     })
-//     .catch(err => console.error(err))
-// };
+exports.getOrders = (req, res, next) => {
+    return req.currentUser.getOrders()
+        .then( orders => {
+            res.render('mongodb/shop/orders',{
+                pageTitle:'Martin\'s Shop - Orders',
+                path:'/orders',
+                css:['product'],
+                orders:orders
+            })
+        })
+    .catch(err => console.error(err))
+};

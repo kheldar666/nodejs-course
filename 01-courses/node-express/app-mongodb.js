@@ -2,7 +2,9 @@ const path = require('path');
 
 const express = require('express');
 
+const User = require('./models/mongodb/user')
 const dbConn = require('./utils/db-mongodb');
+const dbConfig = require('./configurations/mongodb');
 
 const app = express();
 
@@ -13,7 +15,7 @@ app.set('views','views');
 
 //Importing the Routes
 const adminRoutes = require('./routes/mongodb/admin');
-// const shopRoutes = require('./routes/mongodb/shop');
+const shopRoutes = require('./routes/mongodb/shop');
 
 
 //Managing Error Routes
@@ -32,18 +34,17 @@ app.use((req, res, next) => {
     console.log("Request URL: " + req.url);
     console.log("Request method: " + req.method);
 
-    // User.findByPk(1)
-    //     .then( user => {
-    //         req.currentUser = user;
-    //         return Promise.resolve();
-    //     })
-    //     .then( result => next() )
-    //     .catch( err => console.error(err));
-    next();   
+    User.findByStringId(dbConfig.defaultUserId)
+        .then( user => {
+            req.currentUser = User.getNewUser(user);
+            return Promise.resolve(user);
+        })
+        .then( result => next() )
+        .catch( err => console.error(err));
 });
 
 app.use('/admin', adminRoutes.routes);
-// app.use(shopRoutes);
+app.use(shopRoutes);
 
 // Managing 404
 app.use(errorRoutes);
@@ -51,6 +52,5 @@ app.use(errorRoutes);
 
 //Init the Database and Start the Server
 dbConn.mongoConnect(mongoClient => {
-    //console.log(mongoClient);
     app.listen(3000)
 })

@@ -1,0 +1,17 @@
+<input type="hidden" name="productId" value="<%=product._id%>">
+<div class="form-control">
+    <label for="title">Title</label>
+    <input type="text" name="title" id="title" value="<%=product.title%>"/>
+</div>
+<div class="form-control">
+    <label for="imageUrl">Image URL</label>
+    <input type="text" name="imageUrl" id="imageUrl" value="<%=product.imageUrl%>" />
+</div>
+<div class="form-control">
+    <label for="price">Price</label>
+    <input type="number" name="price" id="price" step="0.01" value="<%=product.price%>" />
+</div>
+<div class="form-control">
+    <label for="description">Description</label>
+    <textarea name="description" id="description"><%=product.description%></textarea>
+</div>

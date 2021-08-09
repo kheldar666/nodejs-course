@@ -4,7 +4,7 @@
 
 <main>
     <form class="product-form" action="/admin/edit-product" method="POST">
-        <%- include('../../includes/product-form.ejs', {product: product}) %>
+        <%- include('../../includes/mongodb/product-form.ejs', {product: product}) %>
 
         <button class="btn" type="submit">Update Product</button>
     </form>

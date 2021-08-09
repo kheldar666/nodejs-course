@@ -1,4 +1,4 @@
-const Product = require('../models/product');
+const Product = require('../../models/mysql/product');
   
 exports.getProducts = (req, res, next) => {
     req.currentUser.getProducts() //Gets all Products created by the current User

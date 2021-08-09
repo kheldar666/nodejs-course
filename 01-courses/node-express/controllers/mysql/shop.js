@@ -1,4 +1,4 @@
-const Product = require('../models/product');
+const Product = require('../../models/mysql/product');
 
 exports.getIndex = (req, res, next) => {
     Product.findAll()

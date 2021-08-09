@@ -2,13 +2,13 @@ const path = require('path');
 
 const express = require('express');
 
-const sequelize = require('./utils/database');
-const Product = require('./models/product');
-const User = require('./models/user');
-const Cart = require('./models/cart');
-const CartItem = require('./models/cart-item');
-const Order = require('./models/order');
-const OrderItem = require('./models/order-item');
+const databaseConns = require('./utils/database');
+const Product = require('./models/mysql/product');
+const User = require('./models/mysql/user');
+const Cart = require('./models/mysql/cart');
+const CartItem = require('./models/mysql/cart-item');
+const Order = require('./models/mysql/order');
+const OrderItem = require('./models/mysql/order-item');
 
 const app = express();
 
@@ -69,7 +69,7 @@ Order.belongsToMany(Product, {through: OrderItem});
 
 //Init the Database and Start the Server
 let currentUser;
-sequelize
+databaseConns.sequelize
     .sync({force:false})
     .then( result => {
         return User.findByPk(1);
@@ -96,7 +96,10 @@ sequelize
         }
         return Promise.resolve(products);
     })
-    .then( products => {
-        app.listen(3000)
+    .then( result => {
+        databaseConns.mongoConnect(mongoClient => {
+            console.log(mongoClient);
+            app.listen(3000)
+        })
     })
     .catch(err => console.error(err));

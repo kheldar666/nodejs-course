@@ -93,7 +93,7 @@ exports.createOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-    return Order.find({orderedBy: req.currentUser})
+    return Order.find({'orderedBy.user': req.currentUser})
         .populate('items.product')
         .then( orders => {
             res.render('mongodb/shop/orders',{

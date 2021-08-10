@@ -22,7 +22,7 @@ const userSchema = new Schema({
             },
             quantity:{ 
                 type:Number,
-                require:true
+                required:true
             }
         }]
     }
@@ -55,7 +55,10 @@ userSchema.methods.removeFromCart = function (productId) {
 userSchema.methods.createOrder = function() {
     const newOrder = new Order();
     newOrder.items = this.cart.items;
-    newOrder.orderedBy = this;
+
+    newOrder.orderedBy.user = this;
+    newOrder.orderedBy.username = this.name;
+
     return newOrder.save()
         .then( result => {
             this.cart = {items:[]}
@@ -65,53 +68,3 @@ userSchema.methods.createOrder = function() {
 }
 
 module.exports = mongoose.model('User', userSchema);
-
-//     createOrder() {
-//         return this.getCartWithProducts()
-//             .then( products => {
-//                 const order = {
-//                     items:products,
-//                     user:{_id:this._id,username:this.username}
-//                 }
-//                 return getDb().collection(ORDERS_COLLECTION)
-//                     .insertOne(order)
-//                     .then( result => {
-//                         return this.clearCart();
-//                     })
-//                     .catch( err => console.error(err))
-//             })
-
-//     }
-
-//     clearCart() {
-//         this.cart = {items: []};
-//         return getDb().collection(USERS_COLLECTION)
-//                 .updateOne(
-//                     {_id:this._id},
-//                     {$set : {cart : this.cart}}
-//                 )
-//     }
-
-//     getOrders() {
-//         return getDb().collection(ORDERS_COLLECTION)
-//             .find({'user._id':this._id}).toArray()
-//     }
-
-//     static findByStringId(userId) {
-//         return getDb().collection(USERS_COLLECTION)
-//             .findOne({_id: new mongodb.ObjectId(userId)});
-
-//     }
-
-//     static getNewUser (jsonUser) {
-//         return new User(
-//             jsonUser.username,
-//             jsonUser.email,
-//             jsonUser.cart,
-//             jsonUser._id
-//         )
-//     }
-
-// }
-
-// module.exports = User;

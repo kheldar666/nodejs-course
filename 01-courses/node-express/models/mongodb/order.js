@@ -15,8 +15,15 @@ const orderSchema = new Schema ({
         }
     }],
     orderedBy: {
-        type:Schema.Types.ObjectId,
-        ref:'User'
+        username : {
+            type:String,
+            required:true
+        },
+        user: {
+            type:Schema.Types.ObjectId,
+            ref:'User',
+            required:true
+        }
     }
 })
 

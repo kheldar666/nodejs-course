@@ -12,10 +12,12 @@
     <% if (mode==='shop') { %>
         <div class="card__actions">
             <a href="/products/<%= product._id %>" class="btn">Details</a>
-            <form action="/addtocart" method="post">
-                <input type="hidden" name="productId" value="<%= product._id %>">
-                <button type="submit" class="btn">Add to Cart</button>
-            </form>
+             <% if(res.locals.isAuthenticated) {%>
+                <form action="/addtocart" method="post">
+                    <input type="hidden" name="productId" value="<%= product._id %>">
+                    <button type="submit" class="btn">Add to Cart</button>
+                </form>
+            <% } %>
         </div>
     <% } else if (mode==='admin') { %>
         <div class="card__actions">

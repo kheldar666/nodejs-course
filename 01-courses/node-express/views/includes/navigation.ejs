@@ -9,13 +9,13 @@
             <li class="main-header__item">
                 <a class="<%= path === '/products' ? 'active' : '' %>" href="/products">Products</a>
             </li>
-            <li class="main-header__item">
-                <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
-            </li>
-            <li class="main-header__item">
-                <a class="<%= path === '/orders' ? 'active' : '' %>" href="/orders">Orders</a>
-            </li>
-            <% if(isAuthenticated) {%>
+            <% if(res.locals.isAuthenticated) {%>
+                <li class="main-header__item">
+                    <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
+                </li>
+                <li class="main-header__item">
+                    <a class="<%= path === '/orders' ? 'active' : '' %>" href="/orders">Orders</a>
+                </li>
                 <li class="main-header__item">
                     <a class="<%= path === '/admin/add-product' ? 'active' : '' %>" href="/admin/add-product">Add Product
                     </a>
@@ -27,9 +27,15 @@
             <% } %>
         </ul>
         <ul class="main-header__item-list">
-            <li class="main-header__item">
-                <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Login</a>
-            </li>
+            <% if(res.locals.isAuthenticated) {%>
+                <li class="main-header__item">
+                    <a href="/logout">Logout</a>
+                </li>
+            <% } else { %>
+                <li class="main-header__item">
+                    <a class="<%= path === '/login' ? 'active' : '' %>" href="/login">Login</a>
+                </li>
+            <% } %>
         </ul>
     </nav>
 </header>

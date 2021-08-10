@@ -7,7 +7,6 @@ const MongoDBStoreSession = require('connect-mongodb-session')(session)
 
 const User = require("./models/mongodb/user");
 
-
 const app = express();
 const store = MongoDBStoreSession({
   uri:process.env.MONGODB_CONNECTION_STRING,
@@ -38,7 +37,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //Adding Session Management
 app.use(
-  session({
+  session({ 
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
@@ -50,13 +49,23 @@ app.use(
 app.use((req, res, next) => {
   // console.log("Request URL: " + req.url);
   // console.log("Request method: " + req.method);
-  User.findById(process.env.APP_DEFAULT_USERID)
-    .then((user) => {
-      req.currentUser = user;
-    })
-    .then((result) => next())
-    .catch((err) => console.error(err));
+  if (!req.session.isAuthenticated) {
+    req.session.isAuthenticated = false;
+  }
+
+  if (req.session.currentUser) {
+    //transforms a data structure into a "real" mongoose object
+    req.currentUser = User.getUserFromData(req.session.currentUser);
+  }
+
+  next();
+
 });
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isAuthenticated;
+  next();
+})
 
 app.use(authRoutes);
 
@@ -73,6 +82,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then((result) => {
+    //TODO: We will need to remove that at some point
     return User.findOne().then((defaultUser) => {
       if (!defaultUser) {
         const defaultUser = new User({

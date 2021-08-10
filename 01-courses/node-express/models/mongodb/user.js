@@ -29,6 +29,25 @@ const userSchema = new Schema({
 
 })
 
+userSchema.statics.getGuestUser = function () {
+    const guestUser = new this({
+        name: "Guest",
+        email: "nobody@localhost",
+        cart: { items: [] },
+    });
+    return guestUser.save();
+};
+
+userSchema.statics.getUserFromData = function (userData) {
+  const guestUser = new this({
+    _id: userData._id,
+    name: userData.name,
+    email: userData.email,
+    cart: userData.cart,
+  });
+  return guestUser;
+};
+
 userSchema.methods.addToCart = function(product) { // Do not use arrow function => Allows to use the 'this' properly
     const cartProductIndex = this.cart.items.findIndex( cp => {
         return cp.product.toString() === product._id.toString();

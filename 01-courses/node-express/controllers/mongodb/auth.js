@@ -1,4 +1,5 @@
 const User = require("../../models/mongodb/user");
+const bcrypt = require("bcryptjs");
 
 exports.getSignup = (req, res, next) => {
   res.render("mongodb/auth/signup", {
@@ -13,20 +14,21 @@ exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
-
   User.findOne({ email: email })
     .then((user) => {
       if (user) {
         //user already exists
         res.redirect("/");
       }
-      const newUser = new User({
-        email: email,
-        password: password,
+      return bcrypt.hash(password, 12).then((hashedpassword) => {
+        const newUser = new User({
+          email: email,
+          password: hashedpassword,
+        });
+        return newUser.save();
       });
-      return newUser.save();
     })
-    .then(result => {
+    .then((result) => {
       res.redirect("/login");
     })
     .catch((err) => console.error(err));
@@ -42,18 +44,36 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-  User.findOne()
+  const email = req.body.email;
+  const password = req.body.password;
+  User.findOne({ email: email })
     .then((user) => {
-      req.session.isAuthenticated = true;
-      req.session.currentUser = user;
-      // The call to save is to ensure all session data is
-      // saved before the redirect that is almost instant
-      req.session.save((err) => {
-        if (err) console.error(err);
-        res.redirect("/");
-      });
+      if (!user) {
+        return res.redirect("/login");
+      } else {
+        return bcrypt
+          .compare(password, user.password)
+          .then(passwordDoMatch => {
+            if (passwordDoMatch) {
+              req.session.isAuthenticated = true;
+              req.session.currentUser = user;
+              return req.session.save((err) => {
+                if (err) console.error(err);
+              });
+            } else {
+              return Promise.reject('Incorrect Username/Password')
+            }
+          })
+          .then(result => {
+            res.redirect("/");
+          })
+          .catch((err) => {
+            console.error(err)
+            res.redirect('/login')
+          });
+      }
     })
-    .catch((err) => console.error(err));
+    .catch((err) => console.error("2" + err));
 };
 
 exports.getLogout = (req, res, next) => {

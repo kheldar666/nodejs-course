@@ -9,7 +9,28 @@ exports.getSignup = (req, res, next) => {
   });
 };
 
-exports.postSignup = (res, req, next) => {};
+exports.postSignup = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const confirmPassword = req.body.confirmPassword;
+
+  User.findOne({ email: email })
+    .then((user) => {
+      if (user) {
+        //user already exists
+        res.redirect("/");
+      }
+      const newUser = new User({
+        email: email,
+        password: password,
+      });
+      return newUser.save();
+    })
+    .then(result => {
+      res.redirect("/login");
+    })
+    .catch((err) => console.error(err));
+};
 
 exports.getLogin = (req, res, next) => {
   res.render("mongodb/auth/login", {
@@ -21,7 +42,7 @@ exports.getLogin = (req, res, next) => {
 };
 
 exports.postLogin = (req, res, next) => {
-  User.findById(process.env.APP_DEFAULT_USERID)
+  User.findOne()
     .then((user) => {
       req.session.isAuthenticated = true;
       req.session.currentUser = user;

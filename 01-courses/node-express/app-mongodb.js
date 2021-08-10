@@ -67,10 +67,10 @@ app.use((req, res, next) => {
   next();
 })
 
-app.use(authRoutes);
 
 app.use("/admin", adminRoutes.routes);
 app.use(shopRoutes);
+app.use(authRoutes);
 
 // Managing 404
 app.use(errorRoutes);
@@ -80,19 +80,6 @@ mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  })
-  .then((result) => {
-    //TODO: We will need to remove that at some point
-    return User.findOne().then((defaultUser) => {
-      if (!defaultUser) {
-        const defaultUser = new User({
-          name: "Administrator",
-          email: "admin@localhost",
-          cart: { items: [] },
-        });
-        return defaultUser.save();
-      }
-    });
   })
   .then((result) => {
     console.info("Starting Node.JS App Server");

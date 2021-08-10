@@ -5,29 +5,30 @@ const Schema = mongoose.Schema
 const Order = require('./order')
 
 const userSchema = new Schema({
-    name : { 
-        type:String,
-        required:true
-    },
-    email: {
-        type:Schema.Types.Email,
-        require:true
-    },
-    cart: {
-        items : [{
-            product:{
-                type:Schema.Types.ObjectId,
-                required:true,
-                ref:'Product'
-            },
-            quantity:{ 
-                type:Number,
-                required:true
-            }
-        }]
-    }
-
-})
+  password: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: Schema.Types.Email,
+    require: true,
+  },
+  cart: {
+    items: [
+      {
+        product: {
+          type: Schema.Types.ObjectId,
+          required: true,
+          ref: "Product",
+        },
+        quantity: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
+  },
+});
 
 userSchema.statics.getUserFromData = function (userData) {
   const user = new this({

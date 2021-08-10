@@ -7,16 +7,16 @@ let _db;
 
 // Setting Up MongoDB
 const mongoConnect = (callback) => {
-    MongoClient.connect(config.connectionString)
-        .then( client => {
-            console.info('Connection to MongoDB established !');
-            _db = client.db('shopDb') //Overwrite the default value from the connection string
-            callback(client);
-        })
-        .catch(err => {
-            console.error(err);
-            throw(err);
-        });
+    MongoClient.connect(process.env.SEQUELIZE_LOGGING)
+      .then((client) => {
+        console.info("Connection to MongoDB established !");
+        _db = client.db("shopDb"); //Overwrite the default value from the connection string
+        callback(client);
+      })
+      .catch((err) => {
+        console.error(err);
+        throw err;
+      });
 
 }
 

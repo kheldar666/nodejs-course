@@ -9,7 +9,8 @@ exports.getProducts = (req, res, next) => {
                 prods: products,
                 pageTitle:'Martin\'s Shop - Admin - Product List',
                 path:'/admin/products',
-                css:['product']
+                css:['product'],
+                isAuthenticated:req.isLoggedIn
             });
         })
         .catch(error => {
@@ -22,7 +23,8 @@ exports.getAddProduct = (req, res, next) => {
             pageTitle:'Martin\'s Shop - Admin - Add a Product',
             path:'/admin/add-product',
             css:['product','forms'],
-            product:new Product()
+            product:new Product(),
+            isAuthenticated:req.isLoggedIn
         });
 }
 
@@ -49,7 +51,8 @@ exports.getEditProduct = (req, res, next) => {
             pageTitle:'Martin\'s Shop - Admin - Edit a Product',
             path:'/admin/edit-product',
             css:['product','forms'],
-            product: product
+            product: product,
+            isAuthenticated:req.isLoggedIn
         });
     })
     .catch( err => console.error(err) );

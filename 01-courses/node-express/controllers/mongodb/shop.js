@@ -8,7 +8,8 @@ exports.getIndex = (req, res, next) => {
                 prods: products,
                 pageTitle:'Martin\'s Shop - Welcome',
                 path:'/',
-                css:['product']
+                css:['product'],
+                isAuthenticated:req.isLoggedIn
             })
         })
         .catch(error => {
@@ -23,7 +24,8 @@ exports.getProducts = (req, res, next) => {
                 prods: products,
                 pageTitle:'Martin\'s Shop - All Products',
                 path:'/products',
-                css:['product']
+                css:['product'],
+                isAuthenticated:req.isLoggedIn
             })
         })
         .catch(error => {
@@ -39,7 +41,8 @@ exports.getProductDetails = (req, res, next) => {
                 pageTitle:'Martin\'s Shop - Details - ' + product.title,
                 path:'/products',
                 css:['product'],
-                product: product
+                product: product,
+                isAuthenticated:req.isLoggedIn
             });
         })
         .catch( err => {
@@ -57,7 +60,8 @@ exports.getCart = (req, res, next) => {
             pageTitle:'Martin\'s Shop - Your Cart',
             path:'/cart',
             css:['product','cart'],
-            cartItems:user.cart.items
+            cartItems:user.cart.items,
+            isAuthenticated:req.isLoggedIn
         });
     })
     .catch(err => console.error(err));
@@ -100,7 +104,8 @@ exports.getOrders = (req, res, next) => {
                 pageTitle:'Martin\'s Shop - Orders',
                 path:'/orders',
                 css:['orders'],
-                orders:orders
+                orders:orders,
+                isAuthenticated:req.isLoggedIn
             })
         })
     .catch(err => console.error(err))

@@ -15,7 +15,8 @@
             "restart": true,
             "runtimeExecutable": "nodemon",
             "console": "integratedTerminal",
-            "cwd":"${workspaceFolder}/"
+            "cwd":"${workspaceFolder}/",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

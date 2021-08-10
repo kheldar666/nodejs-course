@@ -17,7 +17,7 @@ app.set('views','views');
 //Importing the Routes
 const adminRoutes = require('./routes/mongodb/admin');
 const shopRoutes = require('./routes/mongodb/shop');
-
+const authRoutes = require('./routes/mongodb/auth');
 
 //Managing Error Routes
 const errorRoutes = require('./routes/errors');
@@ -43,6 +43,8 @@ app.use((req, res, next) => {
         .catch( err => console.error(err));
 
 });
+
+app.use(authRoutes);
 
 app.use('/admin', adminRoutes.routes);
 app.use(shopRoutes);

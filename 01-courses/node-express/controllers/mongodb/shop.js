@@ -99,7 +99,7 @@ exports.getOrders = (req, res, next) => {
             res.render('mongodb/shop/orders',{
                 pageTitle:'Martin\'s Shop - Orders',
                 path:'/orders',
-                css:['product'],
+                css:['orders'],
                 orders:orders
             })
         })

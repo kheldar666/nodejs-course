@@ -6,6 +6,9 @@
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <title><%= pageTitle %></title>
         <link rel="stylesheet" href="/css/main.css">
+        <% if (css.includes("auth")) {%>
+            <link rel="stylesheet" href="/css/auth.css">
+        <% } %>
         <% if (css.includes("cart")) {%>
             <link rel="stylesheet" href="/css/cart.css">
         <% } %>
@@ -15,5 +18,9 @@
         <% if (css.includes("forms")) {%>
             <link rel="stylesheet" href="/css/forms.css">
         <% } %>
+        <% if (css.includes("orders")) {%>
+            <link rel="stylesheet" href="/css/orders.css">
+        <% } %>
+        
     </head>
     <body>

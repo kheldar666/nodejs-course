@@ -4,13 +4,13 @@
 
 <main>
     <% if(orders.length > 0) { %>
-        <ul>
+        <ul class="orders">
             <% orders.forEach( order => { %>
-                <li>
-                    <h1># <%= order._id %></h1>
-                    <ul>
+                <li class="orders__item">
+                    <h1>Order - # <%= order._id %></h1>
+                    <ul class="orders__product">
                         <% order.items.forEach(item => { %>
-                            <li><%= item.product.title %> ( Qty : <%= item.quantity %> )</li>
+                            <li class="orders__product-item"><%= item.product.title %> ( Qty : <%= item.quantity %> )</li>
                         <% }) %>
                     </ul>
                 </li>

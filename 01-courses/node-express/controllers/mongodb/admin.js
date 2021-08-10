@@ -1,7 +1,9 @@
 const Product = require('../../models/mongodb/product');
   
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll() 
+    Product.find()
+        //.select('title price -userId') // only fetch the fields we want
+        //.populate('createdBy', 'name') //populate the data from relations
         .then(products => {
             res.render('mongodb/admin/products',{
                 prods: products,
@@ -20,19 +22,19 @@ exports.getAddProduct = (req, res, next) => {
             pageTitle:'Martin\'s Shop - Admin - Add a Product',
             path:'/admin/add-product',
             css:['product','forms'],
-            product:Product.getEmptyProduct()
+            product:new Product()
         });
 }
 
 exports.postAddProducts = (req, res, next) => {
-    const product = new Product(
-        req.body.title,
-        req.body.price,
-        req.body.description,
-        req.body.imageUrl,
-        null,
-        req.currentUser._id
-    );
+    const product = new Product({
+        title:req.body.title,
+        price:req.body.price,
+        description:req.body.description,
+        imageUrl:req.body.imageUrl,
+        createdBy: req.currentUser
+    });
+    
     product.save()
         .then(result => {
             res.redirect('/admin/products');
@@ -42,7 +44,7 @@ exports.postAddProducts = (req, res, next) => {
 
 exports.getEditProduct = (req, res, next) => {
     const productId = req.params.productId;
-    Product.findByStringId(productId).then(product => {
+    Product.findById(productId).then(product => {
         res.render('mongodb/admin/edit-product',{
             pageTitle:'Martin\'s Shop - Admin - Edit a Product',
             path:'/admin/edit-product',
@@ -56,18 +58,14 @@ exports.getEditProduct = (req, res, next) => {
 exports.postUpdateProduct = (req, res, next) => {
     const productId = req.body.productId;
 
-    Product.findByStringId(productId)
+    Product.findById(productId)
         .then( product => {
             if(product) {
-                const updatedProduct= new Product(
-                    req.body.title,
-                    req.body.price,
-                    req.body.description,
-                    req.body.imageUrl,
-                    product._id,
-                    req.currentUser._id
-                )
-                return updatedProduct.save();
+                product.title=req.body.title
+                product.price=req.body.price
+                product.description=req.body.description
+                product.imageUrl=req.body.imageUrl
+                return product.save();
             }
             return Promise.reject('Product not found.')
         })
@@ -80,7 +78,7 @@ exports.postUpdateProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
     const productId = req.body.productId;
-    Product.deleteByStringId(productId)
+    Product.findByIdAndRemove(productId)
         .then( result => {
             res.redirect('/admin/products');
         })

@@ -3,15 +3,15 @@
 <%- include('../../includes/navigation.ejs') %>
 
 <main>
-    <% if(cartProducts.length > 0) {  %>
+    <% if(cartItems.length > 0) {  %>
         <ul class="cart__item-list">
-            <% for(product of cartProducts) { %>
+            <% for(item of cartItems) { %>
                 <li class="cart__item">
-                    <h1><%=product.title%></h1>
-                    <h2>(Qty : <%= product.quantity %> )</h2>
+                    <h1><%=item.product.title%></h1>
+                    <h2>(Qty : <%= item.quantity %> )</h2>
                     <form action="/removefromcart" method="post">
-                        <input type="hidden" name="productId" value="<%=product._id%>">
-                        <button class="btn" class="btn">Delete</button>
+                        <input type="hidden" name="productId" value="<%=item.product._id%>">
+                        <button class="btn danger" class="btn">Delete</button>
                     </form>
                 </li>
             <% } %>

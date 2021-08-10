@@ -1,10 +1,11 @@
 const path = require('path');
 
 const express = require('express');
+const mongoose = require('mongoose')
 
 const User = require('./models/mongodb/user')
-const dbConn = require('./utils/db-mongodb');
 const dbConfig = require('./configurations/mongodb');
+const appConfig = require('./configurations/app');
 
 const app = express();
 
@@ -34,13 +35,13 @@ app.use((req, res, next) => {
     console.log("Request URL: " + req.url);
     console.log("Request method: " + req.method);
 
-    User.findByStringId(dbConfig.defaultUserId)
+    User.findById(dbConfig.defaultUserId)
         .then( user => {
-            req.currentUser = User.getNewUser(user);
-            return Promise.resolve(user);
+            req.currentUser = user;
         })
         .then( result => next() )
         .catch( err => console.error(err));
+
 });
 
 app.use('/admin', adminRoutes.routes);
@@ -51,6 +52,25 @@ app.use(errorRoutes);
 
 
 //Init the Database and Start the Server
-dbConn.mongoConnect(mongoClient => {
-    app.listen(3000)
-})
+mongoose.connect(dbConfig.connectionString, {
+        useNewUrlParser:true,
+        useUnifiedTopology: true
+    })
+    .then( result => {
+        return User.findOne()
+            .then( defaultUser => {
+                if(!defaultUser) {
+                    const defaultUser = new User({
+                        name:'Administrator',
+                        email:'admin@localhost',
+                        cart:{items:[]}
+                    })
+                    return defaultUser.save();
+                }
+            } )
+    })
+    .then( result => {
+        console.info('Starting Node.JS App Server')
+        app.listen(appConfig.port)
+    })
+    .catch(err => console.error(err))

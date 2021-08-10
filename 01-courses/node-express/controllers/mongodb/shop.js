@@ -2,7 +2,7 @@ const Product = require('../../models/mongodb/product');
 const User = require('../../models/mongodb/user');
 
 exports.getIndex = (req, res, next) => {
-    Product.fetchAll()
+    Product.find()
         .then(products => {
             res.render('mongodb/shop/index',{
                 prods: products,
@@ -17,7 +17,7 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll()
+    Product.find()
         .then(products => {
             res.render('mongodb/shop/product-list',{
                 prods: products,
@@ -49,13 +49,15 @@ exports.getProductDetails = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    req.currentUser.getCartWithProducts()
-    .then( cartWithProducts => {
+    req.currentUser
+    .populate('cart.items.product')
+    .execPopulate()
+    .then( user => {
         res.render('mongodb/shop/cart',{
             pageTitle:'Martin\'s Shop - Your Cart',
             path:'/cart',
             css:['product','cart'],
-            cartProducts:cartWithProducts
+            cartItems:user.cart.items
         });
     })
     .catch(err => console.error(err));
@@ -64,7 +66,7 @@ exports.getCart = (req, res, next) => {
 exports.postAddToCart = (req, res, next) => {
     const productId = req.body.productId;
 
-    Product.findByStringId(productId)
+    Product.findById(productId)
         .then( product => {
             return req.currentUser.addToCart(product);
         })
@@ -75,7 +77,7 @@ exports.postAddToCart = (req, res, next) => {
 
 exports.postRemoveFromCart = (req, res, next) => {
     const productId = req.body.productId;
-    req.currentUser.deleteItemFromCart(productId)
+    req.currentUser.removeFromCart(productId)
         .then(result => {
             res.redirect('/cart'); 
         })

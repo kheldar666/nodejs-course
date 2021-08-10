@@ -1,5 +1,5 @@
 const Product = require('../../models/mongodb/product');
-const User = require('../../models/mongodb/user');
+const Order = require('../../models/mongodb/order');
 
 exports.getIndex = (req, res, next) => {
     Product.find()
@@ -93,7 +93,8 @@ exports.createOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-    return req.currentUser.getOrders()
+    return Order.find({orderedBy: req.currentUser})
+        .populate('items.product')
         .then( orders => {
             res.render('mongodb/shop/orders',{
                 pageTitle:'Martin\'s Shop - Orders',

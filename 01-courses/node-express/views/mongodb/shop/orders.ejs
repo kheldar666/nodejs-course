@@ -10,14 +10,14 @@
                     <h1># <%= order._id %></h1>
                     <ul>
                         <% order.items.forEach(item => { %>
-                            <li><%= item.title %> ( Qty : <%= item.quantity %> )</li>
+                            <li><%= item.product.title %> ( Qty : <%= item.quantity %> )</li>
                         <% }) %>
                     </ul>
                 </li>
             <% }) %>
         </ul>
     <% } else { %>
-        <h1>No orders placed pet.</h1>
+        <h1>No orders placed yet.</h1>
     <% } %>
 </main>
 

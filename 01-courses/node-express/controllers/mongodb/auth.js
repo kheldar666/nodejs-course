@@ -14,7 +14,12 @@ exports.postLogin = (req, res, next) => {
     .then((user) => {
       req.session.isAuthenticated = true;
       req.session.currentUser = user;
-      res.redirect("/");
+      // The call to save is to ensure all session data is 
+      // saved before the redirect that is almost instant
+      req.session.save((err) => {
+        if (err) console.error(err);
+        res.redirect("/");
+      });
     })
     .catch((err) => console.error(err));
 };

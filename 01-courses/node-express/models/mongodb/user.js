@@ -29,23 +29,14 @@ const userSchema = new Schema({
 
 })
 
-userSchema.statics.getGuestUser = function () {
-    const guestUser = new this({
-        name: "Guest",
-        email: "nobody@localhost",
-        cart: { items: [] },
-    });
-    return guestUser.save();
-};
-
 userSchema.statics.getUserFromData = function (userData) {
-  const guestUser = new this({
+  const user = new this({
     _id: userData._id,
     name: userData.name,
     email: userData.email,
     cart: userData.cart,
   });
-  return guestUser;
+  return user;
 };
 
 userSchema.methods.addToCart = function(product) { // Do not use arrow function => Allows to use the 'this' properly

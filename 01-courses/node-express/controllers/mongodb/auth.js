@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const mailer = require("nodemailer");
 const sendgrid = require("nodemailer-sendgrid-transport");
+const { validationResult } = require("express-validator");
 
 const User = require("../../models/mongodb/user");
 const baseUrl = require("../../utils/base-url");
@@ -20,26 +21,34 @@ exports.getSignup = (req, res, next) => {
     pageTitle: "Martin's Shop - Signup",
     path: "/signup",
     css: ["forms", "auth"],
+    email: "",
   });
 };
 
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
-  User.findOne({ email: email })
-    .then((user) => {
-      if (user) {
-        //user already exists
-        return Promise.reject("Account already exists !");
-      }
-      return bcrypt.hash(password, 12).then((hashedpassword) => {
-        const newUser = new User({
-          email: email,
-          password: hashedpassword,
-        });
-        return newUser.save();
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render("mongodb/auth/signup", {
+      pageTitle: "Martin's Shop - Signup",
+      path: "/signup",
+      css: ["forms", "auth"],
+      email: email,
+      errorMessage: errors.array()[0].msg,
+    });
+  }
+
+  bcrypt
+    .hash(password, 12)
+    .then((hashedpassword) => {
+      const newUser = new User({
+        email: email,
+        password: hashedpassword,
       });
+      return newUser.save();
     })
     .then((newUser) => {
       transporter.sendMail({
@@ -61,12 +70,25 @@ exports.getLogin = (req, res, next) => {
     pageTitle: "Martin's Shop - Login",
     path: "/login",
     css: ["forms", "auth"],
+    email: '',
   });
 };
 
 exports.postLogin = (req, res, next) => {
+  const errors = validationResult(req);
   const email = req.body.email;
   const password = req.body.password;
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render("mongodb/auth/login", {
+      pageTitle: "Martin's Shop - Login",
+      path: "/login",
+      css: ["forms", "auth"],
+      email: email,
+      errorMessage: errors.array()[0].msg,
+    });
+  }
+
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
@@ -85,7 +107,7 @@ exports.postLogin = (req, res, next) => {
             } else {
               return Promise.reject("Incorrect Username or Password");
             }
-          })
+          });
       }
     })
     .catch((err) => {
@@ -175,7 +197,7 @@ exports.postSetNewPassword = (req, res, next) => {
         return user.save();
       });
     })
-    .then( result => {
+    .then((result) => {
       req.flash("info", "New password set succesfully");
       res.redirect("/login");
     })

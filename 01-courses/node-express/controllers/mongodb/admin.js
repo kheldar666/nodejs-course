@@ -10,7 +10,6 @@ exports.getProducts = (req, res, next) => {
         pageTitle: "Martin's Shop - Admin - Product List",
         path: "/admin/products",
         css: ["product"],
-        res: res,
       });
     })
     .catch((error) => {
@@ -24,7 +23,6 @@ exports.getAddProduct = (req, res, next) => {
     path: "/admin/add-product",
     css: ["product", "forms"],
     product: new Product(),
-    res: res,
   });
 };
 
@@ -54,7 +52,6 @@ exports.getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         css: ["product", "forms"],
         product: product,
-        res: res,
       });
     })
     .catch((err) => console.error(err));

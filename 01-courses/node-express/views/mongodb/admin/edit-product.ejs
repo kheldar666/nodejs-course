@@ -1,14 +1,17 @@
-<%- include('../../includes/head.ejs') %>
-
-<%- include('../../includes/navigation.ejs') %>
+<%- include('../../includes/head.ejs') %> <%-
+include('../../includes/navigation.ejs') %>
 
 <main>
-    <form class="product-form" action="/admin/edit-product" method="POST">
-        <%- include('../../includes/mongodb/product-form.ejs', {product: product}) %>
+  <% if(errorMessage) { %>
+  <div class="user-message user-message--error"><%= errorMessage %></div>
+  <% } %>
+  <form class="product-form" action="/admin/edit-product" method="POST">
+    <%- include('../../includes/mongodb/product-form.ejs', {product: product})
+    %>
 
-        <input type="hidden" name="_csrf" value="<%= res.locals.csrfToken %>">
-        <button class="btn" type="submit">Update Product</button>
-    </form>
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+    <button class="btn" type="submit">Update Product</button>
+  </form>
 </main>
-    
+
 <%- include('../../includes/end.ejs') %>

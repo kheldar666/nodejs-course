@@ -9,7 +9,6 @@ exports.getIndex = (req, res, next) => {
         pageTitle: "Martin's Shop - Welcome",
         path: "/",
         css: ["product"],
-        res: res,
       });
     })
     .catch((error) => {
@@ -25,7 +24,6 @@ exports.getProducts = (req, res, next) => {
         pageTitle: "Martin's Shop - All Products",
         path: "/products",
         css: ["product"],
-        res: res,
       });
     })
     .catch((error) => {
@@ -42,7 +40,6 @@ exports.getProductDetails = (req, res, next) => {
         path: "/products",
         css: ["product"],
         product: product,
-        res: res,
       });
     })
     .catch((err) => {
@@ -61,7 +58,6 @@ exports.getCart = (req, res, next) => {
         path: "/cart",
         css: ["product", "cart"],
         cartItems: user.cart.items,
-        res: res,
       });
     })
     .catch((err) => console.error(err));
@@ -106,7 +102,6 @@ exports.getOrders = (req, res, next) => {
         path: "/orders",
         css: ["orders"],
         orders: orders,
-        res: res,
       });
     })
     .catch((err) => console.error(err));

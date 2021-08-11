@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDBStoreSession = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
+const flash = require("connect-flash");
 
 const User = require("./models/mongodb/user");
 
@@ -53,29 +54,40 @@ app.use(
 // CSRF protection needs to come after the session init
 app.use(csrfProtection);
 
+//Adding Flash message featare (after Session)
+app.use(flash());
+
 //Setup Routes Management and Middlewares
 app.use((req, res, next) => {
-  // console.log("Request URL: " + req.url);
-  // console.log("Request method: " + req.method);
   if (!req.session.isAuthenticated) {
     req.session.isAuthenticated = false;
   }
+  next();
+});
 
+app.use((req, res, next) => {
   if (req.session.currentUser) {
     //transforms a data structure into a "real" mongoose object
-    User.getUserFromData(req.session.currentUser).then((user) => {
-      req.currentUser = user;
-      next();
-    });
+    return User.getUserFromData(req.session.currentUser)
+      .then((user) => {
+        req.currentUser = user;
+      })
+      .then((result) => next())
+      .catch((err) => console.error(err));
   } else {
     next();
   }
-
 });
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isAuthenticated;
   res.locals.csrfToken = req.csrfToken();
+  const errMessage = req.flash("error");
+  if (errMessage.length > 0) {
+    res.locals.errorMessage = errMessage[0];
+  } else {
+    res.locals.errorMessage = null;
+  }
   next();
 });
 

@@ -4,6 +4,5 @@ exports.get404Error = (req, res, next) => {
     errorMsg: "Oops ! Looks like you are lost ?",
     path: "/404",
     css: [],
-    res: res,
   });
 };

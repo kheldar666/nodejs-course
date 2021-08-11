@@ -6,7 +6,6 @@ exports.getSignup = (req, res, next) => {
     pageTitle: "Martin's Shop - Signup",
     path: "/signup",
     css: ["forms", "auth"],
-    res: res,
   });
 };
 
@@ -18,7 +17,7 @@ exports.postSignup = (req, res, next) => {
     .then((user) => {
       if (user) {
         //user already exists
-        res.redirect("/");
+        return Promise.reject('Account already exists !');
       }
       return bcrypt.hash(password, 12).then((hashedpassword) => {
         const newUser = new User({
@@ -31,15 +30,18 @@ exports.postSignup = (req, res, next) => {
     .then((result) => {
       res.redirect("/login");
     })
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      req.flash("error", err);
+      res.redirect("/signup");
+    });
+
 };
 
 exports.getLogin = (req, res, next) => {
   res.render("mongodb/auth/login", {
     pageTitle: "Martin's Shop - Login",
     path: "/login",
-    css: ["forms", "auth"],
-    res: res,
+    css: ["forms", "auth"]
   });
 };
 
@@ -49,11 +51,11 @@ exports.postLogin = (req, res, next) => {
   User.findOne({ email: email })
     .then((user) => {
       if (!user) {
-        return res.redirect("/login");
+        return Promise.reject("Incorrect Username or Password");
       } else {
         return bcrypt
           .compare(password, user.password)
-          .then(passwordDoMatch => {
+          .then((passwordDoMatch) => {
             if (passwordDoMatch) {
               req.session.isAuthenticated = true;
               req.session.currentUser = user;
@@ -61,19 +63,18 @@ exports.postLogin = (req, res, next) => {
                 if (err) console.error(err);
               });
             } else {
-              return Promise.reject('Incorrect Username/Password')
+              return Promise.reject("Incorrect Username or Password");
             }
           })
-          .then(result => {
+          .then((result) => {
             res.redirect("/");
-          })
-          .catch((err) => {
-            console.error(err)
-            res.redirect('/login')
           });
       }
     })
-    .catch((err) => console.error("2" + err));
+    .catch((err) => {
+      req.flash("error", err);
+      res.redirect("/login");
+    });
 };
 
 exports.getLogout = (req, res, next) => {

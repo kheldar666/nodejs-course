@@ -1,32 +1,31 @@
-<%- include('../../includes/head.ejs') %>
-
-<%- include('../../includes/navigation.ejs') %>
+<%- include('../../includes/head.ejs') %> <%-
+include('../../includes/navigation.ejs') %>
 
 <main>
-    <% if(cartItems.length > 0) {  %>
-        <ul class="cart__item-list">
-            <% for(item of cartItems) { %>
-                <li class="cart__item">
-                    <h1><%=item.product.title%></h1>
-                    <h2>(Qty : <%= item.quantity %> )</h2>
-                    <form action="/removefromcart" method="post">
-                        <input type="hidden" name="productId" value="<%=item.product._id%>">
-                        <input type="hidden" name="_csrf" value="<%= res.locals.csrfToken %>">
-                        <button class="btn danger" class="btn">Delete</button>
-                    </form>
-                </li>
-            <% } %>
-        </ul>
-        <hr />
-        <div class="centered">
-            <form action="/create-order" method="post">
-                <input type="hidden" name="_csrf" value="<%= res.locals.csrfToken %>">
-                <button type="submit" class="btn">Order Now !</button>
-            </form>
-        </div>
-    <% } else  { %>
-        <h1>Your Cart is Empty</h1>
+  <% if(cartItems.length > 0) { %>
+  <ul class="cart__item-list">
+    <% for(item of cartItems) { %>
+    <li class="cart__item">
+      <h1><%=item.product.title%></h1>
+      <h2>(Qty : <%= item.quantity %> )</h2>
+      <form action="/removefromcart" method="post">
+        <input type="hidden" name="productId" value="<%=item.product._id%>" />
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+        <button class="btn danger" class="btn">Delete</button>
+      </form>
+    </li>
     <% } %>
+  </ul>
+  <hr />
+  <div class="centered">
+    <form action="/create-order" method="post">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+      <button type="submit" class="btn">Order Now !</button>
+    </form>
+  </div>
+  <% } else { %>
+  <h1>Your Cart is Empty</h1>
+  <% } %>
 </main>
 
 <%- include('../../includes/end.ejs') %>

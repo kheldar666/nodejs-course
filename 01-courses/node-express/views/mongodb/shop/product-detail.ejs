@@ -1,22 +1,21 @@
-<%- include('../../includes/head.ejs') %>
-
-<%- include('../../includes/navigation.ejs') %>
+<%- include('../../includes/head.ejs') %> <%-
+include('../../includes/navigation.ejs') %>
 
 <main class="centered">
-    <h1><%= product.title %></h1>
-    <hr>
-    <div class="image">
-        <img src="<%= product.imageUrl %>" alt="<%= product.title %>">
-    </div>
-    <h2>$ <%= product.price %></h2>
-    <p><%= product.description %></p>
-    <% if(res.locals.isAuthenticated) { %>
-    <form action="/cart" method="post">
-        <input type="hidden" name="productId" value="<%=product._id%>">
-        <input type="hidden" name="_csrf" value="<%= res.locals.csrfToken %>">
-        <button type="submit" class="btn">Add to Cart</button>
-    </form>
-    <% } %>
+  <h1><%= product.title %></h1>
+  <hr />
+  <div class="image">
+    <img src="<%= product.imageUrl %>" alt="<%= product.title %>" />
+  </div>
+  <h2>$ <%= product.price %></h2>
+  <p><%= product.description %></p>
+  <% if(isAuthenticated) { %>
+  <form action="/cart" method="post">
+    <input type="hidden" name="productId" value="<%=product._id%>" />
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+    <button type="submit" class="btn">Add to Cart</button>
+  </form>
+  <% } %>
 </main>
 
 <%- include('../../includes/end.ejs') %>

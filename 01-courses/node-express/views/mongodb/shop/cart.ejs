@@ -2,6 +2,8 @@
 include('../../includes/navigation.ejs') %>
 
 <main>
+  <%- include('../../includes/messages.ejs') %>
+
   <% if(cartItems.length > 0) { %>
   <ul class="cart__item-list">
     <% for(item of cartItems) { %>

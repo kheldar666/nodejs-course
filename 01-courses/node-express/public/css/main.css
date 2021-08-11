@@ -248,6 +248,12 @@ form {
   color: red;
 }
 
+.user-message--info {
+  border: 1px solid #00695c;
+  color: #00695c;
+  background: white;
+}
+
 @media (min-width: 768px) {
   .main-header__nav {
     display: flex;

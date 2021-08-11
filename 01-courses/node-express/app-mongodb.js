@@ -88,6 +88,13 @@ app.use((req, res, next) => {
   } else {
     res.locals.errorMessage = null;
   }
+  const infMessage = req.flash("info");
+  if (infMessage.length > 0) {
+    res.locals.infoMessage = infMessage[0];
+  } else {
+    res.locals.infoMessage = null;
+  }
+
   next();
 });
 
@@ -106,6 +113,6 @@ mongoose
   })
   .then((result) => {
     console.info("Starting Node.JS App Server");
-    app.listen(process.env.APP_LISTEN_PORT);
+    app.listen(process.env.APP_PORT);
   })
   .catch((err) => console.error(err));

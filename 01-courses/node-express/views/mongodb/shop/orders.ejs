@@ -3,6 +3,8 @@
 <%- include('../../includes/navigation.ejs') %>
 
 <main>
+    <%- include('../../includes/messages.ejs') %>
+
     <% if(orders.length > 0) { %>
         <ul class="orders">
             <% orders.forEach( order => { %>

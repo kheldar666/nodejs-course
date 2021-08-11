@@ -13,6 +13,8 @@ const userSchema = new Schema({
     type: Schema.Types.Email,
     require: true,
   },
+  resetToken:String,
+  resetTokenExpiration:Date,
   cart: {
     items: [
       {

@@ -1,7 +1,7 @@
 const Product = require("../../models/mongodb/product");
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
+  Product.find({createdBy:req.currentUser})
     //.select('title price -userId') // only fetch the fields we want
     //.populate('createdBy', 'name') //populate the data from relations
     .then((products) => {
@@ -32,7 +32,7 @@ exports.postAddProducts = (req, res, next) => {
     price: req.body.price,
     description: req.body.description,
     imageUrl: req.body.imageUrl,
-    createdBy: req.session.currentUser,
+    createdBy: req.currentUser,
   });
 
   product
@@ -45,9 +45,12 @@ exports.postAddProducts = (req, res, next) => {
 
 exports.getEditProduct = (req, res, next) => {
   const productId = req.params.productId;
-  Product.findById(productId)
+  Product.findOne({_id:productId,createdBy:req.currentUser})
     .then((product) => {
-      res.render("mongodb/admin/edit-product", {
+      if(!product) {
+        return res.redirect("/")
+      }
+      return res.render("mongodb/admin/edit-product", {
         pageTitle: "Martin's Shop - Admin - Edit a Product",
         path: "/admin/edit-product",
         css: ["product", "forms"],
@@ -60,7 +63,7 @@ exports.getEditProduct = (req, res, next) => {
 exports.postUpdateProduct = (req, res, next) => {
   const productId = req.body.productId;
 
-  Product.findById(productId)
+  Product.findOne({ _id: productId, createdBy: req.currentUser })
     .then((product) => {
       if (product) {
         product.title = req.body.title;
@@ -75,12 +78,15 @@ exports.postUpdateProduct = (req, res, next) => {
       console.info("Product updated");
       res.redirect("/admin/products");
     })
-    .catch((err) => console.error(err));
+    .catch((err) => {
+      console.error(err)
+      return res.redirect("/");
+    });
 };
 
 exports.postDeleteProduct = (req, res, next) => {
   const productId = req.body.productId;
-  Product.findByIdAndRemove(productId)
+  Product.findOneAndRemove({ _id: productId, createdBy: req.currentUser })
     .then((result) => {
       res.redirect("/admin/products");
     })

@@ -3,6 +3,8 @@
 <%- include('../../includes/navigation.ejs') %>
 
 <main>
+    <%- include('../../includes/messages.ejs') %>
+
     <% if (prods.length > 0) { %>
         <div class="grid">
             <% for (let product of prods) { %>

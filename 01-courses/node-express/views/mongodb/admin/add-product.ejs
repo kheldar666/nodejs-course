@@ -2,6 +2,7 @@
 include('../../includes/navigation.ejs') %>
 
 <main>
+  <%- include('../../includes/messages.ejs') %>
   <% if(errorMessage) { %>
   <div class="user-message user-message--error"><%= errorMessage %></div>
   <% } %>

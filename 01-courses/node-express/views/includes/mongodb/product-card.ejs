@@ -14,6 +14,7 @@
             <a href="/products/<%= product._id %>" class="btn">Details</a>
              <% if(res.locals.isAuthenticated) {%>
                 <form action="/addtocart" method="post">
+                    <input type="hidden" name="_csrf" value="<%= res.locals.csrfToken %>">
                     <input type="hidden" name="productId" value="<%= product._id %>">
                     <button type="submit" class="btn">Add to Cart</button>
                 </form>
@@ -23,6 +24,7 @@
         <div class="card__actions">
             <a href="/admin/edit-product/<%= product._id %>" class="btn">Edit</a>
             <form action="/admin/delete-product" method="post">
+                <input type="hidden" name="_csrf" value="<%= res.locals.csrfToken %>">
                 <input type="hidden" name="productId" value="<%= product._id %>">
                 <button type="submit" class="btn">Delete</button>
             </form>

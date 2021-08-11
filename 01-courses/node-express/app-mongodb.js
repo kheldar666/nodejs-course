@@ -3,15 +3,20 @@ const path = require("path");
 const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
-const MongoDBStoreSession = require('connect-mongodb-session')(session)
+const MongoDBStoreSession = require("connect-mongodb-session")(session);
+const csrf = require("csurf");
 
 const User = require("./models/mongodb/user");
 
 const app = express();
 const store = MongoDBStoreSession({
-  uri:process.env.MONGODB_CONNECTION_STRING,
-  collection:'sessions'
-})
+  uri: process.env.MONGODB_CONNECTION_STRING,
+  collection: "sessions",
+});
+
+//Initialize CSRF Protection
+const csrfProtection = csrf();
+
 //Setting the Templating Engine
 //Using EJS
 app.set("view engine", "ejs");
@@ -37,13 +42,16 @@ app.use(express.static(path.join(__dirname, "public")));
 
 //Adding Session Management
 app.use(
-  session({ 
+  session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
-    store:store
+    store: store,
   })
 );
+
+// CSRF protection needs to come after the session init
+app.use(csrfProtection);
 
 //Setup Routes Management and Middlewares
 app.use((req, res, next) => {
@@ -55,18 +63,21 @@ app.use((req, res, next) => {
 
   if (req.session.currentUser) {
     //transforms a data structure into a "real" mongoose object
-    req.currentUser = User.getUserFromData(req.session.currentUser);
+    User.getUserFromData(req.session.currentUser).then((user) => {
+      req.currentUser = user;
+      next();
+    });
+  } else {
+    next();
   }
-
-  next();
 
 });
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isAuthenticated;
+  res.locals.csrfToken = req.csrfToken();
   next();
-})
-
+});
 
 app.use("/admin", adminRoutes.routes);
 app.use(shopRoutes);

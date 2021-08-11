@@ -13,6 +13,7 @@
     <% if(res.locals.isAuthenticated) { %>
     <form action="/cart" method="post">
         <input type="hidden" name="productId" value="<%=product._id%>">
+        <input type="hidden" name="_csrf" value="<%= res.locals.csrfToken %>">
         <button type="submit" class="btn">Add to Cart</button>
     </form>
     <% } %>

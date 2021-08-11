@@ -15,7 +15,7 @@ const orderSchema = new Schema ({
         }
     }],
     orderedBy: {
-        username : {
+        email : {
             type:String,
             required:true
         },

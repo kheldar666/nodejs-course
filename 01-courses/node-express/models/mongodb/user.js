@@ -31,13 +31,14 @@ const userSchema = new Schema({
 });
 
 userSchema.statics.getUserFromData = function (userData) {
-  const user = new this({
-    _id: userData._id,
-    name: userData.name,
-    email: userData.email,
-    cart: userData.cart,
-  });
-  return user;
+    return this.findOne({ _id: userData._id }).then((user) => {
+      if (user) {
+        return Promise.resolve(user);
+      } else {
+        return Promise.reject('User not found')
+      }
+    })
+    .catch(err => console.error(err));
 };
 
 userSchema.methods.addToCart = function(product) { // Do not use arrow function => Allows to use the 'this' properly
@@ -52,7 +53,7 @@ userSchema.methods.addToCart = function(product) { // Do not use arrow function 
         this.cart.items.push({product:product, quantity:1})
     }
 
-    this.save();
+    return this.save();
 }
 
 userSchema.methods.removeFromCart = function (productId) {
@@ -68,7 +69,7 @@ userSchema.methods.createOrder = function() {
     newOrder.items = this.cart.items;
 
     newOrder.orderedBy.user = this;
-    newOrder.orderedBy.username = this.name;
+    newOrder.orderedBy.email = this.email;
 
     return newOrder.save()
         .then( result => {

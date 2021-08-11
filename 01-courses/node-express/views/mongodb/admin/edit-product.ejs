@@ -6,6 +6,7 @@
     <form class="product-form" action="/admin/edit-product" method="POST">
         <%- include('../../includes/mongodb/product-form.ejs', {product: product}) %>
 
+        <input type="hidden" name="_csrf" value="<%= res.locals.csrfToken %>">
         <button class="btn" type="submit">Update Product</button>
     </form>
 </main>

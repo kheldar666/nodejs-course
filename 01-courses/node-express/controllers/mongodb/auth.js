@@ -28,7 +28,7 @@ exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  if (!req.validationError) {
+  if (req.validationError) {
     return res.status(422).render("mongodb/auth/signup", {
       pageTitle: "Martin's Shop - Signup",
       path: "/signup",

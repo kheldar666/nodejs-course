@@ -31,7 +31,11 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProducts = (req, res, next) => {
-  if (req.validationError) {
+
+  if (req.validationError || !req.file) {
+    if(!req.file) {
+      res.locals.errorMessage="Invalid file";
+    }
     return res.status(422).render("mongodb/admin/add-product", {
       pageTitle: "Martin's Shop - Admin - Add a Product",
       path: "/admin/add-product",
@@ -39,8 +43,7 @@ exports.postAddProducts = (req, res, next) => {
       product: new Product({
         title: req.body.title,
         price: req.body.price,
-        description: req.body.description,
-        imageUrl: req.body.imageUrl,
+        description: req.body.description
       }),
     });
   }
@@ -49,7 +52,7 @@ exports.postAddProducts = (req, res, next) => {
     title: req.body.title,
     price: req.body.price,
     description: req.body.description,
-    imageUrl: req.body.imageUrl,
+    imageUrl: req.file.path.replace('public',''),
     createdBy: req.currentUser,
   });
 
@@ -99,8 +102,7 @@ exports.postUpdateProduct = (req, res, next) => {
         _id: productId,
         title: req.body.title,
         price: req.body.price,
-        description: req.body.description,
-        imageUrl: req.body.imageUrl,
+        description: req.body.description
       }),
     });
   }
@@ -111,7 +113,9 @@ exports.postUpdateProduct = (req, res, next) => {
         product.title = req.body.title;
         product.price = req.body.price;
         product.description = req.body.description;
-        product.imageUrl = req.body.imageUrl;
+        if(req.file) {
+          product.imageUrl = req.file.path.replace('public','');
+        }
         return product.save();
       }
       return Promise.reject("Product not found.");

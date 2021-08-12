@@ -4,10 +4,9 @@ include('../../includes/navigation.ejs') %>
 <main>
   <%- include('../../includes/messages.ejs') %>
 
-  <form class="product-form" action="/admin/add-product" method="POST">
-    <%- include('../../includes/mongodb/product-form.ejs', {product: product})
-    %>
-    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+  <form class="product-form" action="/admin/add-product?_csrf=<%= csrfToken %>" method="POST" enctype="multipart/form-data">
+    <%- include('../../includes/mongodb/product-form.ejs', {product: product}) %>
+    <!-- <input type="hidden" name="_csrf" value="<%= csrfToken %>" /> -->
     <button class="btn" type="submit">Add Product</button>
   </form>
 </main>

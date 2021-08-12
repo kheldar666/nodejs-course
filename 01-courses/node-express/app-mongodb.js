@@ -6,7 +6,6 @@ const session = require("express-session");
 const MongoDBStoreSession = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
-const { validationResult } = require("express-validator");
 
 const User = require("./models/mongodb/user");
 
@@ -15,9 +14,6 @@ const store = MongoDBStoreSession({
   uri: process.env.MONGODB_CONNECTION_STRING,
   collection: "sessions",
 });
-
-//Initialize CSRF Protection
-const csrfProtection = csrf();
 
 //Setting the Templating Engine
 //Using EJS
@@ -39,6 +35,7 @@ app.use(
   })
 );
 
+
 //Setup the static/public path
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -53,9 +50,10 @@ app.use(
 );
 
 // CSRF protection needs to come after the session init
+const csrfProtection = csrf();
 app.use(csrfProtection);
 
-//Adding Flash message featare (after Session)
+//Adding Flash message feature (after Session)
 app.use(flash());
 
 //Setup Routes Management and Middlewares
@@ -72,10 +70,12 @@ app.use((req, res, next) => {
     return User.findById(req.session.currentUser._id)
       .then((user) => {
         req.currentUser = user;
-        next()
+        next();
       })
-      .catch(err => {
-        throw new Error(err)
+      .catch((err) => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        next(error);
       });
   } else {
     next();
@@ -114,9 +114,9 @@ app.use(errorRoutes);
 
 //Special Route for managing Errors
 app.use((error, req, res, next) => {
-  console.error(error)
-  res.redirect('/500');
-})
+  console.error(error);
+  res.redirect("/500");
+});
 
 //Init the Database and Start the Server
 mongoose

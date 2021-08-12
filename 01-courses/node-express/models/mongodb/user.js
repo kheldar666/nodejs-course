@@ -32,16 +32,17 @@ const userSchema = new Schema({
   },
 });
 
-userSchema.statics.getUserFromData = function (userData) {
-    return this.findOne({ _id: userData._id }).then((user) => {
-      if (user) {
-        return Promise.resolve(user);
-      } else {
-        return Promise.reject('User not found')
-      }
-    })
-    .catch(err => console.error(err));
-};
+// Not used but keep as a reference
+// userSchema.statics.getUserFromData = function (userData) {
+//     return this.findOne({ _id: userData._id }).then((user) => {
+//       if (user) {
+//         return Promise.resolve(user);
+//       } else {
+//         return Promise.reject('User not found')
+//       }
+//     })
+//     .catch(err => {throw new Error(err)});
+// };
 
 userSchema.methods.addToCart = function(product) { // Do not use arrow function => Allows to use the 'this' properly
     const cartProductIndex = this.cart.items.findIndex( cp => {

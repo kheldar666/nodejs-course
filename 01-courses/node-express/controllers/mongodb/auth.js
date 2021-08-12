@@ -56,9 +56,11 @@ exports.postSignup = (req, res, next) => {
       res.redirect("/login");
     })
     .catch((err) => {
-      req.flash("error", err);
-      res.redirect("/signup");
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
     });
+
 };
 
 exports.getLogin = (req, res, next) => {
@@ -84,17 +86,18 @@ exports.postLogin = (req, res, next) => {
   }
 
   User.findOne({ email: email })
-    .then(user => {
+    .then((user) => {
       req.session.isAuthenticated = true;
       req.session.currentUser = user;
-      return req.session.save(err => {
+      return req.session.save((err) => {
         if (err) console.error(err);
         res.redirect("/");
       });
     })
     .catch((err) => {
-      req.flash("error", err.toString());
-      res.redirect("/login");
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
     });
 };
 

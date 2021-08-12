@@ -69,12 +69,14 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   if (req.session.currentUser) {
     //transforms a data structure into a "real" mongoose object
-    return User.getUserFromData(req.session.currentUser)
+    return User.findById(req.session.currentUser._id)
       .then((user) => {
         req.currentUser = user;
+        next()
       })
-      .then((result) => next())
-      .catch((err) => console.error(err));
+      .catch(err => {
+        throw new Error(err)
+      });
   } else {
     next();
   }
@@ -107,8 +109,14 @@ app.use("/admin", adminRoutes.routes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
-// Managing 404
+// Managing 404 (catch all remainiing routes)
 app.use(errorRoutes);
+
+//Special Route for managing Errors
+app.use((error, req, res, next) => {
+  console.error(error)
+  res.redirect('/500');
+})
 
 //Init the Database and Start the Server
 mongoose

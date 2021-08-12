@@ -2,14 +2,18 @@
   "name": "org.libermundi.express1st",
   "version": "1.0.0",
   "author": "Martin",
-  "license": "ISC",
-  "description": "",
-  "main": "app.js",
+  "license": "Apache-2.0",
+  "description": "Learning Project",
+  "main": "app-mongodb.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kheldar666/nodejs-course.git"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
+    "start": "node -r dotenv/config app-mongodb.js",
     "start-dev-mysql": "nodemon app-mysql.js",
-    "start-dev-mongodb": "nodemon -r dotenv/config --unhandled-rejections=strict app-mongodb.js"
+    "start-dev-mongodb": "nodemon -r dotenv/config --unhandled-rejections=strict  --trace-deprecation app-mongodb.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

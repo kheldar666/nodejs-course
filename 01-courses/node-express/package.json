@@ -9,7 +9,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js",
     "start-dev-mysql": "nodemon app-mysql.js",
-    "start-dev-mongodb": "nodemon -r dotenv/config app-mongodb.js"
+    "start-dev-mongodb": "nodemon -r dotenv/config --unhandled-rejections=strict app-mongodb.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

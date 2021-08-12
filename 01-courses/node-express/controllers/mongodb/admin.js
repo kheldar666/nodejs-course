@@ -1,7 +1,9 @@
+const { validationResult } = require("express-validator");
+
 const Product = require("../../models/mongodb/product");
 
 exports.getProducts = (req, res, next) => {
-  Product.find({createdBy:req.currentUser})
+  Product.find({ createdBy: req.currentUser })
     //.select('title price -userId') // only fetch the fields we want
     //.populate('createdBy', 'name') //populate the data from relations
     .then((products) => {
@@ -27,6 +29,20 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProducts = (req, res, next) => {
+  if (req.validationError) {
+    return res.status(422).render("mongodb/admin/add-product", {
+      pageTitle: "Martin's Shop - Admin - Add a Product",
+      path: "/admin/add-product",
+      css: ["product", "forms"],
+      product: new Product({
+        title: req.body.title,
+        price: req.body.price,
+        description: req.body.description,
+        imageUrl: req.body.imageUrl,
+      }),
+    });
+  }
+
   const product = new Product({
     title: req.body.title,
     price: req.body.price,
@@ -45,10 +61,10 @@ exports.postAddProducts = (req, res, next) => {
 
 exports.getEditProduct = (req, res, next) => {
   const productId = req.params.productId;
-  Product.findOne({_id:productId,createdBy:req.currentUser})
+  Product.findOne({ _id: productId, createdBy: req.currentUser })
     .then((product) => {
-      if(!product) {
-        return res.redirect("/")
+      if (!product) {
+        return res.redirect("/");
       }
       return res.render("mongodb/admin/edit-product", {
         pageTitle: "Martin's Shop - Admin - Edit a Product",
@@ -62,6 +78,20 @@ exports.getEditProduct = (req, res, next) => {
 
 exports.postUpdateProduct = (req, res, next) => {
   const productId = req.body.productId;
+  if (req.validationError) {
+    return res.status(422).render("mongodb/admin/edit-product", {
+      pageTitle: "Martin's Shop - Admin - Edit a Product",
+      path: "/admin/edit-product",
+      css: ["product", "forms"],
+      product: new Product({
+        _id: productId,
+        title: req.body.title,
+        price: req.body.price,
+        description: req.body.description,
+        imageUrl: req.body.imageUrl,
+      }),
+    });
+  }
 
   Product.findOne({ _id: productId, createdBy: req.currentUser })
     .then((product) => {
@@ -79,7 +109,7 @@ exports.postUpdateProduct = (req, res, next) => {
       res.redirect("/admin/products");
     })
     .catch((err) => {
-      console.error(err)
+      console.error(err);
       return res.redirect("/");
     });
 };

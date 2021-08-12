@@ -3,7 +3,6 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const mailer = require("nodemailer");
 const sendgrid = require("nodemailer-sendgrid-transport");
-const { validationResult } = require("express-validator");
 
 const User = require("../../models/mongodb/user");
 const baseUrl = require("../../utils/base-url");
@@ -29,15 +28,12 @@ exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
+  if (!req.validationError) {
     return res.status(422).render("mongodb/auth/signup", {
       pageTitle: "Martin's Shop - Signup",
       path: "/signup",
       css: ["forms", "auth"],
       email: email,
-      errorMessage: errors.array()[0].msg,
     });
   }
 
@@ -70,48 +66,34 @@ exports.getLogin = (req, res, next) => {
     pageTitle: "Martin's Shop - Login",
     path: "/login",
     css: ["forms", "auth"],
-    email: '',
+    email: "",
   });
 };
 
 exports.postLogin = (req, res, next) => {
-  const errors = validationResult(req);
   const email = req.body.email;
   const password = req.body.password;
 
-  if (!errors.isEmpty()) {
+  if (req.validationError) {
     return res.status(422).render("mongodb/auth/login", {
       pageTitle: "Martin's Shop - Login",
       path: "/login",
       css: ["forms", "auth"],
       email: email,
-      errorMessage: errors.array()[0].msg,
     });
   }
 
   User.findOne({ email: email })
-    .then((user) => {
-      if (!user) {
-        return Promise.reject("Incorrect Username or Password");
-      } else {
-        return bcrypt
-          .compare(password, user.password)
-          .then((passwordDoMatch) => {
-            if (passwordDoMatch) {
-              req.session.isAuthenticated = true;
-              req.session.currentUser = user;
-              return req.session.save((err) => {
-                if (err) console.error(err);
-                res.redirect("/");
-              });
-            } else {
-              return Promise.reject("Incorrect Username or Password");
-            }
-          });
-      }
+    .then(user => {
+      req.session.isAuthenticated = true;
+      req.session.currentUser = user;
+      return req.session.save(err => {
+        if (err) console.error(err);
+        res.redirect("/");
+      });
     })
     .catch((err) => {
-      req.flash("error", err);
+      req.flash("error", err.toString());
       res.redirect("/login");
     });
 };

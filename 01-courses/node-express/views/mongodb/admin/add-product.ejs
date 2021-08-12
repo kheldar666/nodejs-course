@@ -3,9 +3,7 @@ include('../../includes/navigation.ejs') %>
 
 <main>
   <%- include('../../includes/messages.ejs') %>
-  <% if(errorMessage) { %>
-  <div class="user-message user-message--error"><%= errorMessage %></div>
-  <% } %>
+
   <form class="product-form" action="/admin/add-product" method="POST">
     <%- include('../../includes/mongodb/product-form.ejs', {product: product})
     %>

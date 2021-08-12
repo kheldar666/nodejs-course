@@ -6,6 +6,7 @@ const session = require("express-session");
 const MongoDBStoreSession = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const { validationResult } = require("express-validator");
 
 const User = require("./models/mongodb/user");
 
@@ -82,6 +83,10 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isAuthenticated;
   res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
+app.use((req, res, next) => {
   const errMessage = req.flash("error");
   if (errMessage.length > 0) {
     res.locals.errorMessage = errMessage[0];

@@ -6,7 +6,7 @@ const { body } = require("express-validator");
 const multer = require("multer");
 const fileStorage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, "./public/data/uploads");
+    callback(null, "./public/uploads");
   },
   filename: (req, file, callback) => {
     callback(null, new Date().getTime() + "." + file.originalname.split(".")[1]);

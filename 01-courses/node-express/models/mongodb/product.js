@@ -18,7 +18,7 @@ const productSchema = new Schema({
   imageUrl: {
     type: String,
     required: true,
-    default: "/data/uploads/1628786166904.png",
+    default: "/img/default-product.png",
   },
   createdBy: {
     type: Schema.Types.ObjectId,

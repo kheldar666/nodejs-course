@@ -161,7 +161,6 @@ exports.getOrderDynamicInvoice = (req, res, next) => {
 
         try {
           if (!fs.existsSync(invoicePath)) {
-            console.log("Invoice does not exist");
             const invoicePdf = new invoicePdfument();
             invoicePdf.pipe(fs.createWriteStream(invoicePath)); //Writes the file to the disk
             invoicePdf.pipe(res);
@@ -189,7 +188,6 @@ exports.getOrderDynamicInvoice = (req, res, next) => {
 
             invoicePdf.end();
           } else {
-            console.log("Invoice does exist");
             // Here we stream the file, that is more efficient as Node don't need to read the entire file.
             const fileStream = fs.createReadStream(invoicePath);
             res.setHeader("Content-Type", "application/pdf");

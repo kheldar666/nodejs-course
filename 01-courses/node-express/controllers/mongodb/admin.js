@@ -1,5 +1,7 @@
 const { validationResult } = require("express-validator");
 
+const fileHelper = require("../../utils/file-helper");
+
 const Product = require("../../models/mongodb/product");
 
 exports.getProducts = (req, res, next) => {
@@ -111,6 +113,18 @@ exports.postUpdateProduct = (req, res, next) => {
         product.price = req.body.price;
         product.description = req.body.description;
         if (req.file) {
+          // Remove the old file
+          try {
+            if (product.imageUrl.startsWith("/uploads/")) {
+              // We don't want to delete the default file
+              fileHelper.deleteFile("public" + product.imageUrl);
+            }
+          } catch (err) {
+            console.error(
+              "Problem when deleting the file :" + "public" + product.imageUrl
+            );
+            console.error(err);
+          }
           product.imageUrl = req.file.path.replace("public", "");
         }
         return product.save();
@@ -129,8 +143,26 @@ exports.postUpdateProduct = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const productId = req.body.productId;
-  Product.findOneAndRemove({ _id: productId, createdBy: req.currentUser })
+  Product.findOneAndRemove(
+    { _id: productId, createdBy: req.currentUser },
+    { select: "imageUrl" }
+  )
     .then((result) => {
+      console.log(result.imageUrl)
+      // Remove the old file
+      try {
+        if (result.imageUrl.startsWith("/uploads/")) {
+          // We don't want to delete the default file
+          fileHelper.deleteFile("public" + result.imageUrl);
+        }
+      } catch (err) {
+        console.error(
+          "Problem when deleting the file :" +
+            "public" +
+            result.imageUrl
+        );
+        console.error(err);
+      }
       res.redirect("/admin/products");
     })
     .catch((err) => {

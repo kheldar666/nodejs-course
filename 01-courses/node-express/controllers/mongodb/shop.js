@@ -1,18 +1,35 @@
 const fs = require("fs");
 const path = require("path");
-const invoicePdfument = require("pdfkit");
+const PDFDocument = require("pdfkit");
 const Product = require("../../models/mongodb/product");
 const Order = require("../../models/mongodb/order");
 const rootDir = require("../../utils/path");
 
+const ITEMS_PER_PAGE = 3;
+
 exports.getIndex = (req, res, next) => {
+  let page = 1;
+  let totalItems;
+  if (req.query.page) {
+    page = req.query.page;
+  }
+
   Product.find()
+    .countDocuments()
+    .then((totalProducts) => {
+      totalItems = totalProducts;
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       res.render("mongodb/shop/index", {
         prods: products,
         pageTitle: "Martin's Shop - Welcome",
         path: "/",
         css: ["product"],
+        totalPages: Math.ceil(Number(totalItems) / Number(ITEMS_PER_PAGE)),
+        currentPage: parseInt(page),
       });
     })
     .catch((err) => {
@@ -23,13 +40,28 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
+  let page = 1;
+  let totalItems;
+  if (req.query.page) {
+    page = req.query.page;
+  }
+
   Product.find()
+    .countDocuments()
+    .then((totalProducts) => {
+      totalItems = totalProducts;
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       res.render("mongodb/shop/product-list", {
         prods: products,
         pageTitle: "Martin's Shop - All Products",
         path: "/products",
         css: ["product"],
+        totalPages: Math.ceil(Number(totalItems) / Number(ITEMS_PER_PAGE)),
+        currentPage: parseInt(page),
       });
     })
     .catch((err) => {
@@ -161,7 +193,7 @@ exports.getOrderDynamicInvoice = (req, res, next) => {
 
         try {
           if (!fs.existsSync(invoicePath)) {
-            const invoicePdf = new invoicePdfument();
+            const invoicePdf = new PDFDocument();
             invoicePdf.pipe(fs.createWriteStream(invoicePath)); //Writes the file to the disk
             invoicePdf.pipe(res);
 

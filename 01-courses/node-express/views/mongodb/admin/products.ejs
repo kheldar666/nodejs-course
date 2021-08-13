@@ -10,6 +10,7 @@
                 <%- include('../../includes/mongodb/product-card.ejs',{product: product, mode:'admin'}) %>
             <% } %>
         </div>
+         <%- include('../../includes/pagination.ejs',{totalPages:totalPages, currentPage:currentPage}) %> 
     <% } else { %> 
         <h1>No Product Available!</h1>
     <% } %>

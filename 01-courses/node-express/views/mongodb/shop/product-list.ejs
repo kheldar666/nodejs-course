@@ -1,18 +1,18 @@
 <%- include('../../includes/head.ejs') %>
-
 <%- include('../../includes/navigation.ejs') %>
 
 <main>
-    <%- include('../../includes/messages.ejs') %>
-    <% if(prods.length > 0) { %>
-        <div class="grid">
-            <% for (let product of prods) { %>
-                <%- include('../../includes/mongodb/product-card.ejs',{product: product, mode:'shop'}) %>
-            <% } %>
-        </div>
-    <% } else { %> 
-        <h1>No Product Available!</h1>
-    <% } %>
+  <%- include('../../includes/messages.ejs') %>
+  <% if(prods.length > 0) { %>
+    <div class="grid">
+        <% for (let product of prods) { %> 
+          <%- include('../../includes/mongodb/product-card.ejs',{product: product, mode:'shop'}) %>
+        <% } %>
+    </div>
+    <%- include('../../includes/pagination.ejs',{totalPages:totalPages,currentPage:currentPage}) %> 
+  <% } else { %>
+  <h1>No Product Available!</h1>
+  <% } %>
 </main>
 
 <%- include('../../includes/end.ejs') %>

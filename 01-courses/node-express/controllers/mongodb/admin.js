@@ -4,16 +4,33 @@ const fileHelper = require("../../utils/file-helper");
 
 const Product = require("../../models/mongodb/product");
 
+const ITEMS_PER_PAGE = 3;
+
 exports.getProducts = (req, res, next) => {
+  let page = 1;
+  let totalItems;
+  if (req.query.page) {
+    page = req.query.page;
+  }
+
   Product.find({ createdBy: req.currentUser })
     //.select('title price -userId') // only fetch the fields we want
     //.populate('createdBy', 'name') //populate the data from relations
+    .countDocuments()
+    .then((totalProducts) => {
+      totalItems = totalProducts;
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       res.render("mongodb/admin/products", {
         prods: products,
         pageTitle: "Martin's Shop - Admin - Product List",
         path: "/admin/products",
         css: ["product"],
+        totalPages: Math.ceil(Number(totalItems) / Number(ITEMS_PER_PAGE)),
+        currentPage: parseInt(page),
       });
     })
     .catch((err) => {

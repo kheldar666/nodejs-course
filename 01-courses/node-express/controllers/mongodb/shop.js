@@ -1,5 +1,9 @@
+const fs = require("fs");
+const path = require("path");
+const invoicePdfument = require("pdfkit");
 const Product = require("../../models/mongodb/product");
 const Order = require("../../models/mongodb/order");
+const rootDir = require("../../utils/path");
 
 exports.getIndex = (req, res, next) => {
   Product.find()
@@ -16,7 +20,6 @@ exports.getIndex = (req, res, next) => {
       error.httpStatusCode = 500;
       next(error);
     });
-
 };
 
 exports.getProducts = (req, res, next) => {
@@ -34,7 +37,6 @@ exports.getProducts = (req, res, next) => {
       error.httpStatusCode = 500;
       next(error);
     });
-
 };
 
 exports.getProductDetails = (req, res, next) => {
@@ -53,7 +55,6 @@ exports.getProductDetails = (req, res, next) => {
       error.httpStatusCode = 500;
       next(error);
     });
-
 };
 
 exports.getCart = (req, res, next) => {
@@ -73,7 +74,6 @@ exports.getCart = (req, res, next) => {
       error.httpStatusCode = 500;
       next(error);
     });
-
 };
 
 exports.postAddToCart = (req, res, next) => {
@@ -89,7 +89,6 @@ exports.postAddToCart = (req, res, next) => {
       error.httpStatusCode = 500;
       next(error);
     });
-
 };
 
 exports.postRemoveFromCart = (req, res, next) => {
@@ -104,7 +103,6 @@ exports.postRemoveFromCart = (req, res, next) => {
       error.httpStatusCode = 500;
       next(error);
     });
-
 };
 
 exports.createOrder = (req, res, next) => {
@@ -118,7 +116,6 @@ exports.createOrder = (req, res, next) => {
       error.httpStatusCode = 500;
       next(error);
     });
-
 };
 
 exports.getOrders = (req, res, next) => {
@@ -131,6 +128,83 @@ exports.getOrders = (req, res, next) => {
         css: ["orders"],
         orders: orders,
       });
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
+};
+
+exports.getOrderDynamicInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  Order.findById(orderId)
+    .populate("items.product")
+    .then((order) => {
+      if (
+        order &&
+        order.orderedBy.user._id.toString() === req.currentUser._id.toString()
+      ) {
+        const invoiceFileName = "invoice-" + orderId + ".pdf";
+        const invoicePath = path.join(
+          rootDir,
+          "private",
+          "invoices",
+          invoiceFileName
+        );
+
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          "attachment; filename=" + invoiceFileName //instead of attachment, can use inline
+        );
+
+        try {
+          if (!fs.existsSync(invoicePath)) {
+            console.log("Invoice does not exist");
+            const invoicePdf = new invoicePdfument();
+            invoicePdf.pipe(fs.createWriteStream(invoicePath)); //Writes the file to the disk
+            invoicePdf.pipe(res);
+
+            invoicePdf.fontSize(26).text("Invoice", {
+              underline: true,
+            });
+            invoicePdf.text("-----------------------");
+            let totalPrice = 0;
+            order.items.forEach((prod) => {
+              totalPrice += prod.quantity * prod.product.price;
+              invoicePdf
+                .fontSize(14)
+                .text(
+                  prod.product.title +
+                    " - " +
+                    prod.quantity +
+                    " x " +
+                    "$" +
+                    prod.product.price
+                );
+            });
+            invoicePdf.text("---");
+            invoicePdf.fontSize(20).text("Total Price: $" + totalPrice);
+
+            invoicePdf.end();
+          } else {
+            console.log("Invoice does exist");
+            // Here we stream the file, that is more efficient as Node don't need to read the entire file.
+            const fileStream = fs.createReadStream(invoicePath);
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader(
+              "Content-Disposition",
+              "attachment; filename=" + invoiceFileName //instead of attachment, can use inline
+            );
+            fileStream.pipe(res);
+          }
+        } catch (err) {
+          next(err);
+        }
+      } else {
+        return Promise.reject("Illegal Access the Invoice");
+      }
     })
     .catch((err) => {
       const error = new Error(err);

@@ -170,3 +170,4 @@ dist
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,node,macos
 01-courses/node-express/public/data/uploads
 01-courses/node-express/public/uploads
+01-courses/node-express/private/invoices

@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-node",
+            "type": "node",
             "request": "launch",
             "name": "Express App (MongoDB)",
             "skipFiles": [
@@ -16,7 +16,8 @@
             "runtimeExecutable": "nodemon",
             "console": "integratedTerminal",
             "cwd":"${workspaceFolder}/",
-            "envFile": "${workspaceFolder}/.env"
+            "envFile": "${workspaceFolder}/.env",
+            "runtimeArgs": ["--trace-deprecation","--unhandled-rejections=strict"]
         }
     ]
 }

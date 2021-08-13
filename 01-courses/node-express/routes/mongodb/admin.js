@@ -74,12 +74,6 @@ router.post(
       })
       .isString()
       .trim(),
-    body("imageUrl", "Please provide a valid Image URL")
-      .not()
-      .isEmpty({
-        ignore_whitespace: true,
-      })
-      .isURL({ require_protocol: true }),
     body("price", "Please indicate a valid price")
       .not()
       .isEmpty({

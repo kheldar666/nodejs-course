@@ -4,10 +4,10 @@ const Product = require("../../models/mongodb/product");
 
 exports.getProducts = (req, res, next) => {
   Product.find({ createdBy: req.currentUser })
-  //.select('title price -userId') // only fetch the fields we want
-  //.populate('createdBy', 'name') //populate the data from relations
-  .then((products) => {
-    res.render("mongodb/admin/products", {
+    //.select('title price -userId') // only fetch the fields we want
+    //.populate('createdBy', 'name') //populate the data from relations
+    .then((products) => {
+      res.render("mongodb/admin/products", {
         prods: products,
         pageTitle: "Martin's Shop - Admin - Product List",
         path: "/admin/products",
@@ -15,8 +15,8 @@ exports.getProducts = (req, res, next) => {
       });
     })
     .catch((err) => {
-      const error = new Error(err)
-      error.httpStatusCode = 500
+      const error = new Error(err);
+      error.httpStatusCode = 500;
       next(error);
     });
 };
@@ -31,11 +31,7 @@ exports.getAddProduct = (req, res, next) => {
 };
 
 exports.postAddProducts = (req, res, next) => {
-
-  if (req.validationError || !req.file) {
-    if(!req.file) {
-      res.locals.errorMessage="Invalid file";
-    }
+  if (req.validationError) {
     return res.status(422).render("mongodb/admin/add-product", {
       pageTitle: "Martin's Shop - Admin - Add a Product",
       path: "/admin/add-product",
@@ -43,7 +39,7 @@ exports.postAddProducts = (req, res, next) => {
       product: new Product({
         title: req.body.title,
         price: req.body.price,
-        description: req.body.description
+        description: req.body.description,
       }),
     });
   }
@@ -52,9 +48,12 @@ exports.postAddProducts = (req, res, next) => {
     title: req.body.title,
     price: req.body.price,
     description: req.body.description,
-    imageUrl: req.file.path.replace('public',''),
     createdBy: req.currentUser,
   });
+
+  if (req.file) {
+    product.imageUrl = req.file.path.replace("public", "");
+  }
 
   product
     .save()
@@ -66,7 +65,6 @@ exports.postAddProducts = (req, res, next) => {
       error.httpStatusCode = 500;
       next(error);
     });
-
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -88,7 +86,6 @@ exports.getEditProduct = (req, res, next) => {
       error.httpStatusCode = 500;
       next(error);
     });
-
 };
 
 exports.postUpdateProduct = (req, res, next) => {
@@ -102,7 +99,7 @@ exports.postUpdateProduct = (req, res, next) => {
         _id: productId,
         title: req.body.title,
         price: req.body.price,
-        description: req.body.description
+        description: req.body.description,
       }),
     });
   }
@@ -113,8 +110,8 @@ exports.postUpdateProduct = (req, res, next) => {
         product.title = req.body.title;
         product.price = req.body.price;
         product.description = req.body.description;
-        if(req.file) {
-          product.imageUrl = req.file.path.replace('public','');
+        if (req.file) {
+          product.imageUrl = req.file.path.replace("public", "");
         }
         return product.save();
       }

@@ -123,6 +123,7 @@ mongoose
   .connect(process.env.MONGODB_CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useFindAndModify: false,
   })
   .then((result) => {
     console.info("Starting Node.JS App Server");

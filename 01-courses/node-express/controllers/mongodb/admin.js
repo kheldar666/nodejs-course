@@ -19,7 +19,7 @@ exports.getProducts = (req, res, next) => {
     .countDocuments()
     .then((totalProducts) => {
       totalItems = totalProducts;
-      return Product.find()
+      return Product.find({ createdBy: req.currentUser })
         .skip((page - 1) * ITEMS_PER_PAGE)
         .limit(ITEMS_PER_PAGE);
     })
@@ -158,33 +158,28 @@ exports.postUpdateProduct = (req, res, next) => {
     });
 };
 
-exports.postDeleteProduct = (req, res, next) => {
-  const productId = req.body.productId;
+exports.deleteProduct = (req, res, next) => {
+  const productId = req.params.productId;
   Product.findOneAndRemove(
     { _id: productId, createdBy: req.currentUser },
     { select: "imageUrl" }
   )
-    .then((result) => {
-      console.log(result.imageUrl)
-      // Remove the old file
-      try {
-        if (result.imageUrl.startsWith("/uploads/")) {
-          // We don't want to delete the default file
-          fileHelper.deleteFile("public" + result.imageUrl);
-        }
-      } catch (err) {
-        console.error(
-          "Problem when deleting the file :" +
-            "public" +
-            result.imageUrl
-        );
-        console.error(err);
+  .then((result) => {
+    // Remove the old file
+    try {
+      if (result.imageUrl.startsWith("/uploads/")) {
+        // We don't want to delete the default file
+        fileHelper.deleteFile("public" + result.imageUrl);
       }
-      res.redirect("/admin/products");
-    })
-    .catch((err) => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      next(error);
-    });
+    } catch (err) {
+      console.error(
+        "Problem when deleting the file :" + "public" + result.imageUrl
+      );
+      console.error(err);
+    }
+    res.status(200).json({ message: "Success !" });
+  })
+  .catch((err) => {
+    res.status(500).json({ message: "Deleting product failed." });
+  });
 };

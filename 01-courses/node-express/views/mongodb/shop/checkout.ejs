@@ -4,8 +4,33 @@
 
 <main>
     <%- include('../../includes/messages.ejs') %>
-
     <h1>Checkout</h1>
+    <% if(cartItems.length > 0) { %>
+        <ul class="cart__item-list">
+            <% for(item of cartItems) { %>
+            <li class="cart__item">
+                <h1><%=item.product.title%></h1>
+                <h2>(Qty : <%= item.quantity %> )</h2>
+            </li>
+            <% } %>
+        </ul>
+        <hr />
+        <div class="centered">
+            <h2>Total: $ <%=totalSum%></h2>
+        </div>
+        <div class="centered">
+            <button id="order-btn" class="btn">ORDER NOW !</button>
+            <script src="https://js.stripe.com/v3/"></script>
+            <script>
+                 var stripe = Stripe('pk_test_51JOObHI9FoXhaFwVzrPxVnYJPA3YA16WgcdaQyl89257dNd7ubcIZrdVRAOzQRrhA0eBM4tIfrgICLzIBayfTA5x008NTxuenz')
+                 var orderBtn = document.getElementById('order-btn');
+                 orderBtn.addEventListener('click', function() {
+                     stripe.redirectToCheckout({
+                         sessionId:'<%=stripeSessionId%>'
+                     })
+                 });
+            </script>
+        </div>
+    <% } %>
 </main>
-
 <%- include('../../includes/end.ejs') %>

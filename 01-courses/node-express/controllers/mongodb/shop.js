@@ -1,9 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit");
+const stripe = require("stripe")(process.env.APP_STRIPE_SECRET);
 const Product = require("../../models/mongodb/product");
 const Order = require("../../models/mongodb/order");
 const rootDir = require("../../utils/path");
+const baseUrl = require("../../utils/base-url");
 
 const ITEMS_PER_PAGE = 3;
 
@@ -137,7 +139,51 @@ exports.postRemoveFromCart = (req, res, next) => {
     });
 };
 
-exports.createOrder = (req, res, next) => {
+exports.getCheckout = (req, res, next) => {
+  let products;
+  let totalPrice;
+  req.currentUser
+    .populate("cart.items.product")
+    .execPopulate()
+    .then((user) => {
+      products = user.cart.items;
+      totalPrice = 0;
+      products.forEach((p) => {
+        totalPrice += p.quantity * p.product.price;
+      });
+      return stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: products.map((p) => {
+          return {
+            name: p.product.title,
+            description: p.product.description,
+            amount: p.product.price * 100,
+            currency: "usd",
+            quantity: p.quantity,
+          };
+        }),
+        success_url: baseUrl + "/checkout/success", // That is just a method use to practice. Should implement webhooks
+        cancel_url: baseUrl + "/checkout/cancel",
+      });
+    })
+    .then((stripeSession) => {
+      res.render("mongodb/shop/checkout", {
+        pageTitle: "Martin's Shop - Checkout",
+        path: "/checkout",
+        css: ["product", "cart"],
+        cartItems: products,
+        totalSum: totalPrice,
+        stripeSessionId: stripeSession.id,
+      });
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      next(error);
+    });
+};
+
+exports.getCheckoutSuccess = (req, res, next) => {
   return req.currentUser
     .createOrder()
     .then((result) => {
@@ -154,6 +200,7 @@ exports.getOrders = (req, res, next) => {
   return Order.find({ "orderedBy.user": req.currentUser })
     .populate("items.product")
     .then((orders) => {
+      console.log(orders);
       res.render("mongodb/shop/orders", {
         pageTitle: "Martin's Shop - Orders",
         path: "/orders",

@@ -19,11 +19,9 @@ include('../../includes/navigation.ejs') %>
     <% } %>
   </ul>
   <hr />
-  <div class="centered">
-    <form action="/create-order" method="post">
-      <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-      <button type="submit" class="btn">Order Now !</button>
-    </form>
+    <div class="centered">
+      <a href="/checkout" class="btn">Checkout </a>
+    </div>
   </div>
   <% } else { %>
   <h1>Your Cart is Empty</h1>

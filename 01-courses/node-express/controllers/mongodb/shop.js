@@ -200,7 +200,6 @@ exports.getOrders = (req, res, next) => {
   return Order.find({ "orderedBy.user": req.currentUser })
     .populate("items.product")
     .then((orders) => {
-      console.log(orders);
       res.render("mongodb/shop/orders", {
         pageTitle: "Martin's Shop - Orders",
         path: "/orders",

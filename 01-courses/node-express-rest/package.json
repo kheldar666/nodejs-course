@@ -1,0 +1,26 @@
+{
+  "name": "node-express-rest",
+  "version": "1.0.0",
+  "description": "Learning Project - REST API",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kheldar666/nodejs-course.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node run -r dotenv/config  app.js",
+    "start-dev": "nodemon run -r dotenv/config --unhandled-rejections=strict  --trace-deprecation app.js"
+  },
+  "keywords": ["Learning","Node","Express","REST"],
+  "author": "Martin Papy",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}

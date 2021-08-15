@@ -1,11 +1,15 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const feedRoutes = require("./routes/feed");
+const path = require("path");
 
 const app = express();
 
 // app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 app.use(bodyParser.json()); // application/json
+
+//Setup the static/public path
+app.use(express.static(path.join(__dirname, "public")));
 
 //Prevent CORS issue
 app.use((req, res, next) => {

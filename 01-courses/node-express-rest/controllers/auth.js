@@ -1,5 +1,6 @@
-const User = require("../models/user");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
 exports.signup = (req, res, next) => {
   const email = req.body.email;
@@ -24,6 +25,46 @@ exports.signup = (req, res, next) => {
     })
     .then((newUser) => {
       res.status(201).json({ message: "User created", userId: newUser._id });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.login = (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const loginError = new Error("Please input a valid email/password");
+  loginError.statusCode = 401;
+
+  let loadedUser;
+  User.findOne({ email: email })
+    .then((user) => {
+      if (!user) {
+        throw loginError;
+      }
+      loadedUser = user;
+      console.log(loadedUser);
+      return bcrypt.compare(password, user.password);
+    })
+    .then((passwordDoMatch) => {
+      console.log("passwordDoMatch :" + passwordDoMatch);
+      if (passwordDoMatch) {
+        //Create JWT
+        const jwtToken = jwt.sign(
+          { email: loadedUser.email, userId: loadedUser._id.toString() },
+          process.env.JWT_SECRET,
+          { expiresIn: "1h" }
+        );
+        res
+          .status(200)
+          .json({ token: jwtToken, userId: loadedUser._id.toString() });
+      } else {
+        throw loginError;
+      }
     })
     .catch((err) => {
       if (!err.statusCode) {

@@ -1,4 +1,3 @@
-const { doesNotMatch } = require("assert");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const mailer = require("nodemailer");
@@ -60,7 +59,6 @@ exports.postSignup = (req, res, next) => {
       error.httpStatusCode = 500;
       next(error);
     });
-
 };
 
 exports.getLogin = (req, res, next) => {
@@ -87,13 +85,25 @@ exports.postLogin = (req, res, next) => {
 
   User.findOne({ email: email })
     .then((user) => {
-      req.session.isAuthenticated = true;
-      req.session.currentUser = user;
-      return req.session.save((err) => {
-        if (err) console.error(err);
-        res.redirect("/");
-      });
+      if (!user) {
+        return Promise.reject("Incorrect Username or Password");
+      } else {
+        return bcrypt
+          .compare(password, user.password)
+          .then((passwordDoMatch) => {
+            if (passwordDoMatch) {
+              req.session.isAuthenticated = true;
+              req.session.currentUser = user;
+              return req.session.save((err) => {
+                if (err) console.error(err);
+              });
+            } else {
+              return Promise.reject("Incorrect Username or Password");
+            }
+          });
+      }
     })
+
     .catch((err) => {
       const error = new Error(err);
       error.httpStatusCode = 500;

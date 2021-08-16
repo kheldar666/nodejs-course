@@ -1,8 +1,8 @@
 const express = require("express");
 const { body } = require("express-validator");
 
-const feedController = require("../controllers/feed");
 const validResult = require("../middleware/validation-postcheck");
+const feedController = require("../controllers/feed");
 const router = express.Router();
 
 router.get("/posts", feedController.getPosts);

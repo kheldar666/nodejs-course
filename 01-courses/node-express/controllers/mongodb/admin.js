@@ -1,5 +1,3 @@
-const { validationResult } = require("express-validator");
-
 const fileHelper = require("../../utils/file-helper");
 
 const Product = require("../../models/mongodb/product");
@@ -164,22 +162,22 @@ exports.deleteProduct = (req, res, next) => {
     { _id: productId, createdBy: req.currentUser },
     { select: "imageUrl" }
   )
-  .then((result) => {
-    // Remove the old file
-    try {
-      if (result.imageUrl.startsWith("/uploads/")) {
-        // We don't want to delete the default file
-        fileHelper.deleteFile("public" + result.imageUrl);
+    .then((result) => {
+      // Remove the old file
+      try {
+        if (result.imageUrl.startsWith("/uploads/")) {
+          // We don't want to delete the default file
+          fileHelper.deleteFile("public" + result.imageUrl);
+        }
+      } catch (err) {
+        console.error(
+          "Problem when deleting the file :" + "public" + result.imageUrl
+        );
+        console.error(err);
       }
-    } catch (err) {
-      console.error(
-        "Problem when deleting the file :" + "public" + result.imageUrl
-      );
-      console.error(err);
-    }
-    res.status(200).json({ message: "Success !" });
-  })
-  .catch((err) => {
-    res.status(500).json({ message: "Deleting product failed." });
-  });
+      res.status(200).json({ message: "Success !" });
+    })
+    .catch((err) => {
+      res.status(500).json({ message: "Deleting product failed." });
+    });
 };

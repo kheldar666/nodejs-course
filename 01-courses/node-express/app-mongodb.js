@@ -35,7 +35,6 @@ app.use(
   })
 );
 
-
 //Setup the static/public path
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -105,7 +104,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/admin", adminRoutes.routes);
+app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 

@@ -1,11 +1,44 @@
 const express = require("express");
+const { body } = require("express-validator");
 
 const feedController = require("../controllers/feed");
-
+const validResult = require("../middleware/validation-postcheck");
 const router = express.Router();
 
 router.get("/posts", feedController.getPosts);
 
-router.post("/post", feedController.createPost);
+router.post(
+  "/post",
+  [
+    body("title", "Please input a proper title (min 5 characters long)")
+      .notEmpty({ ignore_whitespace: false })
+      .trim()
+      .isLength({ min: 5 }),
+    body("content", "Please input a proper content (min 5 characters long)")
+      .notEmpty({ ignore_whitespace: false })
+      .trim()
+      .isLength({ min: 5 }),
+  ],
+  validResult,
+  feedController.createPost
+);
+
+router.get("/post/:postId", feedController.getPost);
+
+router.put(
+  "/post/:postId",
+  [
+    body("title", "Please input a proper title (min 5 characters long)")
+      .notEmpty({ ignore_whitespace: false })
+      .trim()
+      .isLength({ min: 5 }),
+    body("content", "Please input a proper content (min 5 characters long)")
+      .notEmpty({ ignore_whitespace: false })
+      .trim()
+      .isLength({ min: 5 }),
+  ],
+  validResult,
+  feedController.updatePost
+);
 
 module.exports = router;

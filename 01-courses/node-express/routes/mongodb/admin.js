@@ -1,4 +1,3 @@
-const path = require("path");
 const express = require("express");
 const { body } = require("express-validator");
 
@@ -9,7 +8,10 @@ const fileStorage = multer.diskStorage({
     callback(null, "./public/uploads");
   },
   filename: (req, file, callback) => {
-    callback(null, new Date().getTime() + "." + file.originalname.split(".")[1]);
+    callback(
+      null,
+      new Date().getTime() + "." + file.originalname.split(".")[1]
+    );
   },
 });
 
@@ -90,4 +92,4 @@ router.post(
 
 router.delete("/product/:productId", isAuth, adminController.deleteProduct);
 
-exports.routes = router;
+module.exports = router;

@@ -10,6 +10,7 @@ exports.getPosts = async (req, res, next) => {
   try {
     const totalPosts = await Post.find();
     const posts = await Post.find()
+      .populate("creator")
       .skip((currentPage - 1) * POST_PER_PAGE)
       .limit(POST_PER_PAGE);
 
@@ -27,7 +28,7 @@ exports.getPosts = async (req, res, next) => {
 
 exports.getPost = async (req, res, next) => {
   const postId = req.params.postId;
-  const post = await Post.findById(postId);
+  const post = await Post.findById(postId).populate("creator");
   try {
     if (post) {
       res.status(200).json({ post: post });

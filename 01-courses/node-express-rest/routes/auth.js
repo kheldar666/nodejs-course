@@ -4,7 +4,6 @@ const { body } = require("express-validator");
 const validResult = require("../middleware/validation-postcheck");
 const authController = require("../controllers/auth");
 const User = require("../models/user");
-const { isLength } = require("validator");
 const router = express.Router();
 
 router.put(
@@ -16,11 +15,10 @@ router.put(
       .custom((email, { req }) => {
         return User.findOne({ email: email }).then((user) => {
           if (user) {
-            return Promise.reject("This email address is already user.");
+            return Promise.reject("This email address is already used.");
           }
         });
-      })
-      .normalizeEmail(),
+      }),
     body("password").trim().isLength({ min: 5 }),
     body("name").trim().not().isEmpty({ ignore_whitespace: false }),
   ],

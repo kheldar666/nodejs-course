@@ -2,13 +2,16 @@ const express = require("express");
 const { body } = require("express-validator");
 
 const validResult = require("../middleware/validation-postcheck");
+const isAuth = require("../middleware/is-auth");
+
 const feedController = require("../controllers/feed");
 const router = express.Router();
 
-router.get("/posts", feedController.getPosts);
+router.get("/posts", isAuth, feedController.getPosts);
 
 router.post(
   "/post",
+  isAuth,
   [
     body("title", "Please input a proper title (min 5 characters long)")
       .notEmpty({ ignore_whitespace: false })
@@ -23,10 +26,11 @@ router.post(
   feedController.createPost
 );
 
-router.get("/post/:postId", feedController.getPost);
+router.get("/post/:postId", isAuth, feedController.getPost);
 
 router.put(
   "/post/:postId",
+  isAuth,
   [
     body("title", "Please input a proper title (min 5 characters long)")
       .notEmpty({ ignore_whitespace: false })
@@ -41,6 +45,6 @@ router.put(
   feedController.updatePost
 );
 
-router.delete("/post/:postId", feedController.deletePost);
+router.delete("/post/:postId", isAuth, feedController.deletePost);
 
 module.exports = router;

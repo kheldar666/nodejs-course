@@ -47,11 +47,9 @@ exports.login = (req, res, next) => {
         throw loginError;
       }
       loadedUser = user;
-      console.log(loadedUser);
       return bcrypt.compare(password, user.password);
     })
     .then((passwordDoMatch) => {
-      console.log("passwordDoMatch :" + passwordDoMatch);
       if (passwordDoMatch) {
         //Create JWT
         const jwtToken = jwt.sign(

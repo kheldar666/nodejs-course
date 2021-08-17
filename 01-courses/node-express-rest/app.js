@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const { Server } = require("socket.io");
 
 const feedRoutes = require("./routes/feed");
 const authRoutes = require("./routes/auth");
@@ -69,9 +70,14 @@ if (process.env.APP_PORT) {
       useFindAndModify: false,
     })
     .then((result) => {
-      app.listen(process.env.APP_PORT);
+      const server = app.listen(process.env.APP_PORT);
+      const io = require("./socket").init(server);
+      io.on("connection", (socket) => {
+        console.log("IO : Client Connected");
+      });
     })
     .catch((err) => {
+      console.error(err);
       throw new Error("Fatal Error. Unable to connect to MongoDB.");
     });
 } else {

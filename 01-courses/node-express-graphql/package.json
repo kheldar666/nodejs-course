@@ -1,0 +1,37 @@
+{
+  "name": "node-express-graphql",
+  "version": "1.0.0",
+  "description": "Learning Project - REST API",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kheldar666/nodejs-course.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node run -r dotenv/config app.js",
+    "start-dev": "nodemon run -r dotenv/config --unhandled-rejections=strict  --trace-deprecation app.js"
+  },
+  "keywords": [
+    "Learning",
+    "Node",
+    "Express",
+    "REST"
+  ],
+  "author": "Martin Papy",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.12.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.13.7",
+    "multer": "^1.4.3",
+    "socket.io": "^4.1.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.12"
+  }
+}

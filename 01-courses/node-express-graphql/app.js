@@ -3,6 +3,10 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const multer = require("multer");
+const { graphqlHTTP } = require("express-graphql");
+
+const graphqlSchema = require("./graphql/schema");
+const graphqlResolvers = require("./graphql/resolvers");
 
 const app = express();
 
@@ -36,12 +40,35 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*"); // could be a list of domains
   res.setHeader(
     "Access-Control-Allow-Methods",
-    "GET, POST, PUT, PATCH, DELETE"
+    "OPTIONS, GET, POST, PUT, PATCH, DELETE"
   );
   //Allow Client to set Content-Type and Authorization headers
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200); // Specific to GraphQL
+  }
   next();
 });
+
+// GraphQL endpoint
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: graphqlSchema,
+    rootValue: graphqlResolvers,
+    graphiql: true,
+    customFormatErrorFn(err) {
+      if (!err.originalError) {
+        return err;
+      }
+      const data = err.originalError.data;
+      const message = err.message || "Error Occurred";
+      const code = err.originalError.code || 500;
+
+      return { message: message, data: data, code: code };
+    },
+  })
+);
 
 //Managing Errors
 app.use((error, req, res, next) => {

@@ -5,6 +5,8 @@ const mongoose = require("mongoose");
 const multer = require("multer");
 const { graphqlHTTP } = require("express-graphql");
 
+const auth = require("./middleware/auth");
+
 const graphqlSchema = require("./graphql/schema");
 const graphqlResolvers = require("./graphql/resolvers");
 
@@ -50,13 +52,16 @@ app.use((req, res, next) => {
   next();
 });
 
+// Check Authentication
+app.use(auth);
+
 // GraphQL endpoint
 app.use(
   "/graphql",
   graphqlHTTP({
     schema: graphqlSchema,
     rootValue: graphqlResolvers,
-    graphiql: true,
+    graphiql: process.env.GRAPHIQL_ACTIVE,
     customFormatErrorFn(err) {
       if (!err.originalError) {
         return err;
@@ -72,7 +77,6 @@ app.use(
 
 //Managing Errors
 app.use((error, req, res, next) => {
-  console.error(error);
   const status = error.statusCode || 500;
   const message = error.message;
   const errors = error.errors || [];

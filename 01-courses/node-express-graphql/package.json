@@ -10,7 +10,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node run -r dotenv/config app.js",
-    "start-dev": "nodemon run -r dotenv/config --unhandled-rejections=strict  --trace-deprecation app.js"
+    "start-dev": "nodemon run -r dotenv/config --unhandled-rejections=strict  --trace-deprecation --trace-warnings  app.js"
   },
   "keywords": [
     "Learning",

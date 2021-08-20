@@ -60,6 +60,7 @@ class Feed extends Component {
             _id
             title
             content
+            imageUrl
             creator { 
               name 
             }
@@ -140,47 +141,55 @@ class Feed extends Component {
     });
     // Set up data (with image!)
     const formData = new FormData();
-    formData.append("title", postData.title);
-    formData.append("content", postData.content);
     formData.append("image", postData.image);
+    if (this.state.editPost) {
+      formData.append("oldPath", this.state.editPost.imagePath);
+    }
 
-    const url = process.env.REACT_APP_BACKEND_URL + "/graphql";
-
-    let graphQlQuery = {
-      query: ` mutation {
-        createPost (
-          postInput: {
-          title:"${postData.title}",
-          content:"${postData.content}",
-          imageUrl:"/img/test.jpg"
-          }
-        )
-        {
-          _id
-          title
-          content
-          imageUrl
-          creator {
-            name
-          }
-          createdAt
-        }      
-      }`,
-    };
-
-    fetch(url, {
-      method: "POST",
-      body: JSON.stringify(graphQlQuery), //Here no need to set Content Type. Everything is automated
+    fetch(process.env.REACT_APP_BACKEND_URL + "/post-image", {
+      method: "PUT",
       headers: {
         Authorization: "Bearer " + this.props.token,
-        "Content-Type": "application/json",
       },
+      body: formData,
     })
+      .then((res) => res.json())
+      .then((fileResData) => {
+        let graphQlQuery = {
+          query: ` mutation {
+            createPost (
+              postInput: {
+              title:"${postData.title}",
+              content:"${postData.content}",
+              imageUrl:"${fileResData.filePath}"
+              }
+            )
+            {
+              _id
+              title
+              content
+              imageUrl
+              creator {
+                name
+              }
+              createdAt
+            }      
+          }`,
+        };
+
+        return fetch(process.env.REACT_APP_BACKEND_URL + "/graphql", {
+          method: "POST",
+          body: JSON.stringify(graphQlQuery), //Here no need to set Content Type. Everything is automated
+          headers: {
+            Authorization: "Bearer " + this.props.token,
+            "Content-Type": "application/json",
+          },
+        });
+      })
       .then((res) => {
         return res.json();
       })
       .then((resData) => {
-        console.log(resData);
         if (resData.errors && resData.errors[0] === 422) {
           throw new Error("Creating or editing a post failed!");
         }
@@ -191,6 +200,7 @@ class Feed extends Component {
           _id: resData.data.createPost._id,
           title: resData.data.createPost.title,
           content: resData.data.createPost.content,
+          imagePath: resData.data.createPost.imageUrl,
           creator: resData.data.createPost.creator,
           createdAt: resData.data.createPost.createdAt,
         };

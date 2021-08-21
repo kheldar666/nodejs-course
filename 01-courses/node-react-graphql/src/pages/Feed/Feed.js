@@ -180,7 +180,8 @@ class Feed extends Component {
           graphQlQuery = {
             query: `
               mutation updatePost(
-                  $postId:ID!$title:String!,
+                  $postId:ID!,
+                  $title:String!,
                   $content:String!, 
                   imageUrl:String!)
                   {
@@ -214,7 +215,7 @@ class Feed extends Component {
         } else {
           graphQlQuery = {
             query: `
-              mutation createPost($title:String!, $content:String!, imageUrl:String!) {
+              mutation createPost($title:String!, $content:String!, $imageUrl:String!) {
                   createPost (
                     postInput: {
                     title:$title,

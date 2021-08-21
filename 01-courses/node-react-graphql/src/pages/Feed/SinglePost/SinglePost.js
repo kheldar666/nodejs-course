@@ -14,22 +14,45 @@ class SinglePost extends Component {
 
   componentDidMount() {
     const postId = this.props.match.params.postId;
-    fetch(process.env.REACT_APP_BACKEND_URL + "/feed/post/" + postId, {
-      headers: { Authorization: "Bearer " + this.props.token },
+    const graphQlQuery = {
+      query: `
+        query {
+            getPost(postId:"${postId}") {
+              _id
+              title
+              content
+              imageUrl
+              creator {
+                name
+              }
+              createdAt
+            }
+        }`,
+    };
+    fetch(process.env.REACT_APP_BACKEND_URL + "/graphql", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + this.props.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(graphQlQuery),
     })
       .then((res) => {
-        if (res.status !== 200) {
-          throw new Error("Failed to fetch status");
-        }
         return res.json();
       })
       .then((resData) => {
+        if (resData.errors) {
+          throw new Error("Error fetching post!");
+        }
         this.setState({
-          title: resData.post.title,
-          author: resData.post.creator.name,
-          date: new Date(resData.post.createdAt).toLocaleDateString("en-US"),
-          image: process.env.REACT_APP_BACKEND_URL + resData.post.imageUrl,
-          content: resData.post.content,
+          title: resData.data.getPost.title,
+          author: resData.data.getPost.creator.name,
+          date: new Date(resData.data.getPost.createdAt).toLocaleDateString(
+            "en-US"
+          ),
+          image:
+            process.env.REACT_APP_BACKEND_URL + resData.data.getPost.imageUrl,
+          content: resData.data.getPost.content,
         });
       })
       .catch((err) => {

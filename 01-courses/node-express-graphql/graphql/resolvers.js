@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 const Post = require("../models/post");
+const path = require("path");
+const fs = require("fs");
 
 const POST_PER_PAGE = 2;
 
@@ -30,7 +32,7 @@ module.exports = {
     if (errors.length > 0) {
       const error = new Error("Invalid inputs");
       error.data = errors;
-      error.code = 422;
+      error.statusCode = 422;
       throw error;
     }
 
@@ -56,14 +58,14 @@ module.exports = {
     const user = await User.findOne({ email: email });
     if (!user) {
       const error = new Error("Invalid Login/Password");
-      error.code = 401;
+      error.statusCode = 401;
       throw error;
     }
 
     const isEqual = await bcrypt.compare(password, user.password);
     if (!isEqual) {
       const error = new Error("Invalid Login/Password");
-      error.code = 401;
+      error.statusCode = 401;
       throw error;
     }
 
@@ -81,7 +83,7 @@ module.exports = {
   createPost: async function ({ postInput }, req) {
     if (!req.isAuth) {
       const error = new Error("Access Forbidden");
-      error.code = 401;
+      error.statusCode = 401;
       throw error;
     }
 
@@ -103,14 +105,14 @@ module.exports = {
     if (errors.length > 0) {
       const error = new Error("Invalid inputs");
       error.data = errors;
-      error.code = 422;
+      error.statusCode = 422;
       throw error;
     }
 
     const creator = await User.findById(req.userId);
     if (!creator) {
       const error = new Error("user not found");
-      error.code = 404;
+      error.statusCode = 404;
       throw error;
     }
 
@@ -138,7 +140,7 @@ module.exports = {
   getPosts: async function ({ currentPage }, req) {
     if (!req.isAuth) {
       const error = new Error("Access Forbidden");
-      error.code = 401;
+      error.statusCode = 401;
       throw error;
     }
     if (!currentPage) {
@@ -154,7 +156,7 @@ module.exports = {
 
     if (!posts) {
       const error = new Error("failed to retrieve Posts");
-      error.code = 500;
+      error.statusCode = 500;
       throw error;
     }
 
@@ -172,4 +174,141 @@ module.exports = {
       totalItems: totalPosts,
     };
   },
+
+  getPost: async function ({ postId }, req) {
+    if (!req.isAuth) {
+      const error = new Error("Access Forbidden");
+      error.statusCode = 401;
+      throw error;
+    }
+    const post = await Post.findById(postId).populate("creator");
+    if (!post) {
+      const error = new Error("Post not found");
+      error.statusCode = 404;
+      throw error;
+    }
+    return {
+      ...post._doc,
+      _id: post._id.toString(),
+      creator: { name: post.creator.name },
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.updatedAt.toISOString(),
+    };
+  },
+
+  updatePost: async function ({ postId, postInput }, req) {
+    if (!req.isAuth) {
+      const error = new Error("Access Forbidden");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const errors = [];
+    if (
+      validator.isEmpty(postInput.title, { ignore_whitespace: false }) ||
+      !validator.isLength(postInput.title, { min: 5 })
+    ) {
+      errors.push({ message: "Please input a valid title" });
+    }
+
+    if (
+      validator.isEmpty(postInput.content, { ignore_whitespace: false }) ||
+      !validator.isLength(postInput.content, { min: 5 })
+    ) {
+      errors.push({ message: "Please input content" });
+    }
+
+    if (errors.length > 0) {
+      const error = new Error("Invalid inputs");
+      error.data = errors;
+      error.statusCode = 422;
+      throw error;
+    }
+
+    const post = await Post.findById(postId).populate("creator");
+
+    if (!post || post.creator._id.toString() !== req.userId.toString()) {
+      const error = new Error("Access Forbidden");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    post.title = postInput.title;
+    post.content = postInput.content;
+    if (postInput.imageUrl !== "undefined") {
+      post.imageUrl = postInput.imageUrl;
+    }
+
+    const updatedPost = await post.save();
+    return {
+      ...updatedPost._doc,
+      creator: { name: post.creator.name },
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.updatedAt.toISOString(),
+    };
+  },
+
+  deletePost: async function ({ postId }, req) {
+    if (!req.isAuth) {
+      const error = new Error("Access Forbidden");
+      error.statusCode = 401;
+      throw error;
+    }
+    const post = await Post.findById(postId).populate("creator");
+    if (!post || post.creator._id.toString() !== req.userId.toString()) {
+      const error = new Error("Access Forbidden");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    clearImage(post.imageUrl);
+
+    await Post.findByIdAndRemove(postId);
+    const user = await User.findById(req.userId);
+    user.posts.pull(postId);
+    await user.save();
+    return true;
+  },
+
+  getStatus: async function (args, req) {
+    if (!req.isAuth) {
+      const error = new Error("Access Forbidden");
+      error.statusCode = 401;
+      throw error;
+    }
+    const user = await User.findById(req.userId);
+    return user.status;
+  },
+
+  updateStatus: async function ({ newStatus }, req) {
+    if (!req.isAuth) {
+      const error = new Error("Access Forbidden");
+      error.statusCode = 401;
+      throw error;
+    }
+    const errors = [];
+    if (
+      validator.isEmpty(newStatus, { ignore_whitespace: false }) ||
+      !validator.isLength(newStatus, { min: 5 })
+    ) {
+      errors.push({ message: "Please input valid status" });
+    }
+    if (errors.length > 0) {
+      const error = new Error("Invalid inputs");
+      error.data = errors;
+      error.statusCode = 422;
+      throw error;
+    }
+    const user = await User.findById(req.userId);
+    user.status = newStatus;
+    await user.save();
+    return true;
+  },
+};
+
+const clearImage = (filePath) => {
+  filePath = path.join(__dirname, "../public/", filePath);
+  fs.unlink(filePath, (err) => {
+    if (err) console.error(err);
+  });
 };

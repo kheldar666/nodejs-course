@@ -82,21 +82,24 @@ app.use(
     schema: graphqlSchema,
     rootValue: graphqlResolvers,
     graphiql: process.env.GRAPHIQL_ACTIVE,
+
+    //Custom Error Management in GraphQL (will always return a 500 though)
     customFormatErrorFn(err) {
       if (!err.originalError) {
         return err;
       }
       const data = err.originalError.data;
       const message = err.message || "Error Occurred";
-      const code = err.originalError.code || 500;
+      const statusCode = err.originalError.statusCode || 500;
 
-      return { message: message, data: data, code: code };
+      return { message: message, data: data, statusCode: statusCode };
     },
   })
 );
 
-//Managing Errors
+//Managing Errors in Express
 app.use((error, req, res, next) => {
+  console.log(error);
   const status = error.statusCode || 500;
   const message = error.message;
   const errors = error.errors || [];

@@ -63,8 +63,8 @@ class Feed extends Component {
       this.setState({ postPage: page });
     }
     const graphQlQuery = {
-      query: ` query {
-        getPosts (currentPage:${page}) {
+      query: ` query FetchPosts($currentPage: Int!) {
+        getPosts (currentPage:$currentPage) {
           totalItems
           posts{
             _id
@@ -78,6 +78,9 @@ class Feed extends Component {
           }
         }
       }`,
+      variables: {
+        currentPage: page,
+      },
     };
     fetch(process.env.REACT_APP_BACKEND_URL + "/graphql", {
       method: "POST",
@@ -106,9 +109,12 @@ class Feed extends Component {
   statusUpdateHandler = (event) => {
     event.preventDefault();
     const graphqlQuery = {
-      query: ` mutation {
-        updateStatus(newStatus:"${this.state.status}")
+      query: ` mutation updateStatus($newStatus:String!) {
+        updateStatus(newStatus:$newStatus)
       }`,
+      variables: {
+        newStatus: this.state.status,
+      },
     };
     fetch(process.env.REACT_APP_BACKEND_URL + "/graphql", {
       method: "POST",
@@ -169,39 +175,72 @@ class Feed extends Component {
     })
       .then((res) => res.json())
       .then((fileResData) => {
-        let mutationHead = `
-          mutation {
-              createPost (
-          `;
+        let graphQlQuery;
         if (this.state.editPost) {
-          mutationHead = `
-            mutation {
-                updatePost (
-                  postId:"${this.state.editPost._id}"
-            `;
+          graphQlQuery = {
+            query: `
+              mutation updatePost(
+                  $postId:ID!$title:String!,
+                  $content:String!, 
+                  imageUrl:String!)
+                  {
+                    updatePost (
+                      postId:postId,
+                      postInput: {
+                      title:$title,
+                      content:$content,
+                      imageUrl:$imageUrl
+                      }
+                    )
+                    {
+                      _id
+                      title
+                      content
+                      imageUrl
+                      creator {
+                        name
+                      }
+                      createdAt
+                      updatedAt
+                    }   
+                }`,
+            variables: {
+              postId: this.state.editPost._id,
+              title: postData.title,
+              content: postData.content,
+              imageUrl: fileResData.filePath,
+            },
+          };
+        } else {
+          graphQlQuery = {
+            query: `
+              mutation createPost($title:String!, $content:String!, imageUrl:String!) {
+                  createPost (
+                    postInput: {
+                    title:$title,
+                    content:$content,
+                    imageUrl:$imageUrl
+                    }
+                  )
+                  {
+                    _id
+                    title
+                    content
+                    imageUrl
+                    creator {
+                      name
+                    }
+                    createdAt
+                    updatedAt
+                  }      
+              }`,
+            variables: {
+              title: postData.title,
+              content: postData.content,
+              imageUrl: fileResData.filePath,
+            },
+          };
         }
-        const graphQlQuery = {
-          query: `
-            ${mutationHead} 
-              postInput: {
-              title:"${postData.title}",
-              content:"${postData.content}",
-              imageUrl:"${fileResData.filePath}"
-              }
-            )
-            {
-              _id
-              title
-              content
-              imageUrl
-              creator {
-                name
-              }
-              createdAt
-              updatedAt
-            }      
-          }`,
-        };
 
         return fetch(process.env.REACT_APP_BACKEND_URL + "/graphql", {
           method: "POST",
@@ -280,9 +319,10 @@ class Feed extends Component {
   deletePostHandler = (postId) => {
     this.setState({ postsLoading: true });
     const graphqlQuery = {
-      query: ` mutation {
-        deletePost (postId:"${postId}")
+      query: ` mutation deletePost($postId:String!) {
+        deletePost (postId:$postId)
       }`,
+      variables: { postId: postId },
     };
     fetch(process.env.REACT_APP_BACKEND_URL + "/graphql", {
       method: "POST",

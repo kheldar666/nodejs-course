@@ -60,12 +60,16 @@ class App extends Component {
     event.preventDefault();
     this.setState({ authLoading: true });
     const graphqlQuery = {
-      query: `{
-        login (email:"${authData.email}",password:"${authData.password}") {
+      query: ` query login($email:String!,$password:String!){
+        login (email:$email,password:$password) {
           userId
           token
         }
       }`,
+      variables: {
+        email: authData.email,
+        password: authData.password,
+      },
     };
     fetch(process.env.REACT_APP_BACKEND_URL + "/graphql", {
       method: "POST",
@@ -114,11 +118,11 @@ class App extends Component {
     this.setState({ authLoading: true });
     const graphqlQuery = {
       query: `
-        mutation {
+        mutation createUser($email:String!,$name:String!,$password:String!) {
           createUser(userInput:{
-            email:"${authData.signupForm.email.value}",
-            name:"${authData.signupForm.name.value}",
-            password:"${authData.signupForm.password.value}"
+            email:$email,
+            name:$name,
+            password:$password
             }) 
           {
           _id
@@ -126,6 +130,11 @@ class App extends Component {
           }
         }
       `,
+      variables: {
+        email: authData.signupForm.email.value,
+        name: authData.signupForm.name.value,
+        password: authData.signupForm.password.value,
+      },
     };
     fetch(process.env.REACT_APP_BACKEND_URL + "/graphql", {
       method: "POST",

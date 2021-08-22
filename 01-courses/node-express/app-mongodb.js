@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -6,6 +7,9 @@ const session = require("express-session");
 const MongoDBStoreSession = require("connect-mongodb-session")(session);
 const csrf = require("csurf");
 const flash = require("connect-flash");
+const helmet = require("helmet");
+const compression = require("compression");
+const morgan = require("morgan");
 
 const User = require("./models/mongodb/user");
 
@@ -27,6 +31,19 @@ const authRoutes = require("./routes/mongodb/auth");
 
 //Managing Error Routes
 const errorRoutes = require("./routes/errors");
+
+// Adding Helmet
+app.use(helmet());
+
+// Adding Compression
+app.use(compression());
+
+// Adding request logging
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "logs", "access.log"),
+  { flags: "a" }
+);
+app.use(morgan("combined", { stream: accessLogStream }));
 
 //Process the forms/query strings
 app.use(

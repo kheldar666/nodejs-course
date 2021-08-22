@@ -88,22 +88,20 @@ exports.postLogin = (req, res, next) => {
       if (!user) {
         return Promise.reject("Incorrect Username or Password");
       } else {
-        return bcrypt
-          .compare(password, user.password)
-          .then((passwordDoMatch) => {
-            if (passwordDoMatch) {
-              req.session.isAuthenticated = true;
-              req.session.currentUser = user;
-              return req.session.save((err) => {
-                if (err) console.error(err);
-              });
-            } else {
-              return Promise.reject("Incorrect Username or Password");
-            }
-          });
+        bcrypt.compare(password, user.password).then((passwordDoMatch) => {
+          if (passwordDoMatch) {
+            req.session.isAuthenticated = true;
+            req.session.currentUser = user;
+            return req.session.save((err) => {
+              if (err) console.error(err);
+              res.redirect("/");
+            });
+          } else {
+            return Promise.reject("Incorrect Username or Password");
+          }
+        });
       }
     })
-
     .catch((err) => {
       const error = new Error(err);
       error.httpStatusCode = 500;

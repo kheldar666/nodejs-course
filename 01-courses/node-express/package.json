@@ -9,6 +9,9 @@
     "type": "git",
     "url": "git+https://github.com/kheldar666/nodejs-course.git"
   },
+  "engines": {
+    "node": "14.17.4"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node -r dotenv/config app-mongodb.js",

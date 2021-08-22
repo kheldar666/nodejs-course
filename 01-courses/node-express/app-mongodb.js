@@ -20,9 +20,10 @@ const store = MongoDBStoreSession({
   collection: "sessions",
 });
 
-// Setting Up HTTPS
-const privateKey = fs.readFileSync(process.env.HTTPS_PRIVATEKEY_FILE);
-const certificate = fs.readFileSync(process.env.HTTPS_CERTIFICATE_FILE);
+// Setting Up HTTPS (for localhost)
+// Not needed on heroku
+//const privateKey = fs.readFileSync(process.env.HTTPS_PRIVATEKEY_FILE);
+//const certificate = fs.readFileSync(process.env.HTTPS_CERTIFICATE_FILE);
 
 //Setting the Templating Engine
 //Using EJS
@@ -148,8 +149,8 @@ mongoose
   })
   .then((result) => {
     console.info("Starting Node.JS App Server");
-    https
-      .createServer({ key: privateKey, cert: certificate }, app)
-      .listen(process.env.APP_PORT);
+    // Spinning up an https server, Not needed on Heroku
+    // https.createServer({ key: privateKey, cert: certificate }, app)
+    app.listen(process.env.APP_PORT);
   })
   .catch((err) => console.error(err));

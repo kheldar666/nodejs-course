@@ -8,7 +8,7 @@
     "url": "git+https://github.com/kheldar666/nodejs-course.git"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node run -r dotenv/config app.js",
     "start-dev": "nodemon run -r dotenv/config --unhandled-rejections=strict  --trace-deprecation app.js"
   },
@@ -32,6 +32,10 @@
     "socket.io": "^4.1.3"
   },
   "devDependencies": {
-    "nodemon": "^2.0.12"
+    "chai": "^4.3.4",
+    "mocha": "^9.1.0",
+    "nodemon": "^2.0.12",
+    "proxyrequire": "^1.0.21",
+    "sinon": "^11.1.2"
   }
 }

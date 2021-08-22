@@ -12,6 +12,10 @@ module.exports = (req, res, next) => {
     throw authError;
   }
 
+  if (!token) {
+    throw authError;
+  }
+
   let decodedToken;
   try {
     decodedToken = jwt.verify(token, process.env.JWT_SECRET);

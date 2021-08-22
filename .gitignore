@@ -173,3 +173,5 @@ dist
 duck.jpg
 01-courses/node-express-rest/public/img
 01-courses/node-express-graphql/public/img
+server.crt
+server.key

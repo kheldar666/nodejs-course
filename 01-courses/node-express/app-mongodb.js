@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const https = require("https");
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -18,6 +19,10 @@ const store = MongoDBStoreSession({
   uri: process.env.MONGODB_CONNECTION_STRING,
   collection: "sessions",
 });
+
+// Setting Up HTTPS
+const privateKey = fs.readFileSync(process.env.HTTPS_PRIVATEKEY_FILE);
+const certificate = fs.readFileSync(process.env.HTTPS_CERTIFICATE_FILE);
 
 //Setting the Templating Engine
 //Using EJS
@@ -143,6 +148,8 @@ mongoose
   })
   .then((result) => {
     console.info("Starting Node.JS App Server");
-    app.listen(process.env.APP_PORT);
+    https
+      .createServer({ key: privateKey, cert: certificate }, app)
+      .listen(process.env.APP_PORT);
   })
   .catch((err) => console.error(err));

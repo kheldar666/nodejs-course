@@ -151,6 +151,6 @@ mongoose
     console.info("Starting Node.JS App Server");
     // Spinning up an https server, Not needed on Heroku
     // https.createServer({ key: privateKey, cert: certificate }, app)
-    app.listen(process.env.APP_PORT);
+    app.listen(process.env.PORT); // Trying to use port value provided by Heroku instead
   })
   .catch((err) => console.error(err));

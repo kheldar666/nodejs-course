@@ -54,6 +54,7 @@ exports.login = async (req, res, next) => {
       res
         .status(200)
         .json({ token: jwtToken, userId: loadedUser._id.toString() });
+      return; // returns the Promise implicitly hidden behind the async/await. Useful for Unit Tests
     } else {
       throw loginError;
     }
@@ -62,5 +63,6 @@ exports.login = async (req, res, next) => {
       err.statusCode = 500;
     }
     next(err);
+    return err;
   }
 };

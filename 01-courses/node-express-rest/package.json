@@ -8,7 +8,7 @@
     "url": "git+https://github.com/kheldar666/nodejs-course.git"
   },
   "scripts": {
-    "test": "mocha -r dotenv/config",
+    "test": "mocha -r dotenv/config --timeout 5000",
     "start": "node run -r dotenv/config app.js",
     "start-dev": "nodemon run -r dotenv/config --unhandled-rejections=strict  --trace-deprecation app.js"
   },
